@@ -100,6 +100,7 @@
     _player.delegate = self;
 
     _player.volume = 1.0;
+    NSLog(@"%f", _player.duration);
     
     [_player prepareToPlay];
     [_player play];
