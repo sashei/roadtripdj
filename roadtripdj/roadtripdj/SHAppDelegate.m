@@ -13,11 +13,12 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     
     _mainView = [SHViewController new];
-    
+
     [self.window setRootViewController:_mainView];
-    
+    [self.window makeKeyAndVisible];
     return YES;
 }
 							

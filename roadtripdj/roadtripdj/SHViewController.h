@@ -23,6 +23,12 @@
 @property SoundCloudSearcher *cloud;
 @property NSMutableDictionary *songData;
 
+@property UILabel *welcomeLabel;
+@property UILabel *cityLabel;
+@property UILabel *songLabel;
+@property UILabel *artistLabel;
+
+@property UIView *soundCloudLogo;
 
 
 // Called by the SoundCloudSearcher when no music is available for the last locality
