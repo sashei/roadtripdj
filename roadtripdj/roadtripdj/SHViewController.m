@@ -22,6 +22,11 @@
         NSError *trash;
         [_session setCategory:@"AVAudioSessionCategoryPlayback" error:&trash];
         
+        if(&UIApplicationWillEnterForegroundNotification != nil)
+        {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationReopened) name:UIApplicationWillEnterForegroundNotification object:nil];
+        }
+        
         // meh
         _prevLocality = @"";
         
@@ -232,7 +237,6 @@
     
     // Add the animation to the circle
     [circle addAnimation:drawAnimation forKey:@"drawCircleAnimation"];
-    
 }
 
 - (void)animationDidStop:(CAAnimation *)theAnimation finished:(BOOL)flag
@@ -244,11 +248,17 @@
     }
 }
 
--(void)viewDidAppear:(BOOL)animated
+-(void)applicationReopened
 {
-    float percentageFinished = _player.currentTime/([[_songData objectForKey:@"duration"] doubleValue]/1000.0);
+    NSLog(@"entered dat foreground!");
     
-    [self drawCircleWithDuration:[_songData objectForKey:@"duration"] fromCompletion:percentageFinished];
+    float percentageFinished = _player.currentTime/_player.duration;
+    
+    float dDuration = _player.duration - _player.currentTime;
+    
+    NSNumber *duration = [NSNumber numberWithFloat:dDuration];
+    
+    [self drawCircleWithDuration:duration fromCompletion:percentageFinished];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
