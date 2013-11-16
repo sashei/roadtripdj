@@ -23,6 +23,7 @@
 @property SoundCloudSearcher *cloud;
 @property NSMutableDictionary *songData;
 @property AVAudioSession *session;
+@property NSString *prevLocality;
 
 @property UILabel *welcomeLabel;
 @property UILabel *cityLabel;

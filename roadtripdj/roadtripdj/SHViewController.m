@@ -22,6 +22,9 @@
         NSError *trash;
         [_session setCategory:@"AVAudioSessionCategoryPlayback" error:&trash];
         
+        // meh
+        _prevLocality = @"";
+        
         // view stuff
         // UIColors
         UIColor *peaColor = [UIColor colorWithRed:(88.0/255.0) green:(165.0/255.0) blue:(123.0/255.0) alpha:1.0];
@@ -53,6 +56,7 @@
         _cityLabel = [[UILabel alloc] initWithFrame:cityFrame];
         [_cityLabel setTextColor:[UIColor whiteColor]];
         [_cityLabel setTextAlignment:NSTextAlignmentCenter];
+        [_cityLabel setText:@"LOADING"];
         [_cityLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:35]];
         
         [self.view addSubview:_cityLabel];
@@ -161,6 +165,7 @@
         
         if (_player == Nil) {
             [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
+            [_artistLabel setText:@"Loading..."];
             [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
         }
     }];
@@ -173,7 +178,7 @@
  */
 - (void)dataReturned:(Track *)track {
     
-    [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
+    
     [_songLabel setText:[track.trackInformation objectForKey:@"title"]];
     [_artistLabel setText:[track.artistInformation objectForKey:@"full_name"]];
     _artistPage = [[NSURL alloc] initWithString:[track.artistInformation objectForKey:@"permalink_url"]];
@@ -248,8 +253,14 @@
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
     NSLog(@"Player is done!");
+    if (_prevLocality != [_cloudPacket objectForKey:@"locality"]) {
+        [_cityLabel setText:[_cloudPacket objectForKey:@"locality"]];
+        _prevLocality = [_cloudPacket objectForKey:@"locality"];
+    }
     // Request another song from the soundcloud searcher, using the new location
     [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+    [_artistLabel setText:@"Loading..."];
+    [_songLabel setText:@""];
 }
 
 - (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
