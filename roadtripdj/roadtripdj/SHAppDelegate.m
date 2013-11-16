@@ -13,6 +13,11 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     // Override point for customization after application launch.
+    
+    _mainView = [SHViewController new];
+    
+    [self.window setRootViewController:_mainView];
+    
     return YES;
 }
 							

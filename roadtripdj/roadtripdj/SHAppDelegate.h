@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SHViewController.h"
 
 @interface SHAppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
+@property SHViewController *mainView;
 
 @end
