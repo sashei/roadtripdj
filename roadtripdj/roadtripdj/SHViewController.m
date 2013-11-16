@@ -83,13 +83,6 @@
         
         [self.view addSubview:_artistLabel];
         
-        int logoSizeX = self.view.bounds.size.width *.25;
-        int logoSizeY = logoSizeX;
-        int logoX = CGRectGetMidX(self.view.frame) - logoSizeX *.5;
-        int logoY = CGRectGetMidY(self.view.frame) - logoSizeX *.5;
-        CGRect logoFrame = CGRectMake(logoX, logoY, logoSizeX, logoSizeY);
-        
-        
         // Set up the location manager
         self.locationManager = [[CLLocationManager alloc] init];
         self.locationManager.delegate = self;
