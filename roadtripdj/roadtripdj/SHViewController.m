@@ -74,17 +74,15 @@
     [self.geocoder reverseGeocodeLocation:self.currentLocation completionHandler:^(NSArray *placemarks, NSError *error) {
         // For now, we just take the first placemark in the array if there is more than one.
         self.currentPlacemark = [placemarks objectAtIndex:0];
-        NSLog([self.currentPlacemark locality]);
+        NSLog(@"Print from geocoder: %@", [self.currentPlacemark locality]);
+        // We put the locality into the cloudPacket
+        [self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
+        
+        if (_player == Nil) {
+            NSLog(@"From the cloudpacket: %@", [_cloudPacket objectForKey:@"locality"]);
+            [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+        }
     }];
-    
-    // We put the locality into the cloudPacket
-    [self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
-    
-    if (_player == Nil)
-        [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-    else
-        NSLog(@"This is bad.");
-    
 }
 
 

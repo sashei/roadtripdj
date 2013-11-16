@@ -68,13 +68,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "roadtripdj/SHViewController.m"
-            timestampString = "406289615.089053"
+            timestampString = "406291721.448543"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "117"
-            endingLineNumber = "117"
-            landmarkName = "-locationManager:didFailWithError:"
-            landmarkType = "5">
+            startingLineNumber = "115"
+            endingLineNumber = "115"
+            landmarkName = "@implementation SHViewController"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
