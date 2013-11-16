@@ -66,7 +66,7 @@
     }
     
     _track.artistInformation = user;
-    
+    NSLog(@"Hi!");
     NSLog([user objectForKey:@"full_name"]);
     
     [self handleArtist:[user objectForKey:@"id"]];

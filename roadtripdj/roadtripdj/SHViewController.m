@@ -80,8 +80,11 @@
     // We put the locality into the cloudPacket
     [self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
     
-    if (_player == NULL)
+    if (_player == Nil)
         [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+    else
+        NSLog(@"This is bad.");
+    
 }
 
 
@@ -91,6 +94,7 @@
  * UI.
  */
 - (void)dataReturned:(Track *)track {
+    NSLog(@"Data returned is happening");
     
     NSError *playerError;
     _player = [[AVAudioPlayer alloc] initWithData:track.data error:&playerError];
