@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "roadtripdj/SHViewController.m"
-            timestampString = "406285013.271886"
+            timestampString = "406285613.747726"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "67"
-            endingLineNumber = "67"
+            startingLineNumber = "65"
+            endingLineNumber = "65"
             landmarkName = "@implementation SHViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -58,6 +58,22 @@
             startingLineNumber = "19"
             endingLineNumber = "19"
             landmarkName = "-init"
+            landmarkType = "5">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "roadtripdj/SHViewController.m"
+            timestampString = "406287670.247167"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "105"
+            endingLineNumber = "105"
+            landmarkName = "-dataReturned:"
             landmarkType = "5">
          </BreakpointContent>
       </BreakpointProxy>

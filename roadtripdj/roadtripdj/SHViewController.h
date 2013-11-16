@@ -24,8 +24,10 @@
 @property NSMutableDictionary *songData;
 
 
+
 // Called by the SoundCloudSearcher when no music is available for the last locality
 - (void)noMusicForLocality;
+- (void)dataReturned:(Track *)track;
 
 //- (void)songDataReceived;
 

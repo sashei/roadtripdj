@@ -28,22 +28,15 @@
         // Create the cloud packet
         self.cloudPacket = [NSMutableDictionary new];
         
+        // Set up the soundcloud searcher
         self.cloud = [SoundCloudSearcher new];
-        NSError *playerError;
-        
-        _player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:@"http://api.soundcloud.com/tracks/13158665/stream"]error:&playerError];
-        
-        NSLog(@"%@",[playerError localizedDescription]);
-        
-        if ([_player isPlaying])
-            NSLog(@"LIFTOFF");
+        _cloud.target = self;
+        _cloud.action = @selector(dataReturned:);
         
         NSLog(@"Loaded!");
 
         
-        _cloud = [SoundCloudSearcher new];
-        _cloud.target = self;
-        _cloud.action = @selector(dataReturned:);
+
 
     }
     return self;
@@ -70,43 +63,46 @@
     // The last object in the NSArray is the most recent location.
     self.currentLocation = [locations lastObject];
     
-    // test that the horizontal accuracy does not indicate an invalid measurement
-
+    // Test that the horizontal accuracy does not indicate an invalid measurement
     if (self.currentLocation.horizontalAccuracy < 0) {
         NSLog(@"Location returned by manager is invalid.");
         return;
     }
     
-    //NSLog(@"%f", [self.currentLocation horizontalAccuracy]);
     
     // Reverse geocode the location.
     [self.geocoder reverseGeocodeLocation:self.currentLocation completionHandler:^(NSArray *placemarks, NSError *error) {
         // For now, we just take the first placemark in the array if there is more than one.
         self.currentPlacemark = [placemarks objectAtIndex:0];
         NSLog([self.currentPlacemark locality]);
-        
-        // We put the locality into the cloudPacket
-        [self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
-        [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
     }];
     
-    // Pass the city to the soundcloud searcher
-    //[self.cloud handleCity:[self.currentPlacemark locality]];
+    // We put the locality into the cloudPacket
+    [self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
+    
+    if (_player == NULL)
+        [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
 }
 
 
-//- (void)songDataReceived {
-//    // _songData = the new song data
-//    
-//    // // Play the song
-//    NSError *playerError;
-//    [self.player initWithContentsOfURL:[NSURL URLWithString:] error:playerError];
-//    self.player.delegate = self;
-//}
-
--(void)dataReturned:(Track *)track
-{
-    //TODO
+/*
+ * Called by the soundcloud searcher after a new song has been found.
+ * Starts playing the song, and calls a helper function to redraw the
+ * UI.
+ */
+- (void)dataReturned:(Track *)track {
+    
+    NSError *playerError;
+    _player = [[AVAudioPlayer alloc] initWithData:track.data error:&playerError];
+    _player.delegate = self;
+    
+    NSLog(@"%@",[playerError localizedDescription]);
+    
+    [_player prepareToPlay];
+    [_player play];
+    
+    if ([_player isPlaying])
+        NSLog(@"LIFTOFF");
 }
 
 
@@ -119,7 +115,7 @@
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
     NSLog(@"Player is done!");
     // Request another song from the soundcloud searcher, using the new location
-    //[self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
+    [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
 }
 
 - (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
