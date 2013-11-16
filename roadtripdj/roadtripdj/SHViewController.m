@@ -254,7 +254,7 @@
     
     float percentageFinished = _player.currentTime/_player.duration;
     
-    float dDuration = _player.duration - _player.currentTime;
+    float dDuration = (_player.duration - _player.currentTime)*1000;
     
     NSNumber *duration = [NSNumber numberWithFloat:dDuration];
     
