@@ -52,8 +52,17 @@
         }
     }
     
-    int randSelector = arc4random() % [scrubbedUsers count];
-    NSMutableDictionary *user = [scrubbedUsers objectAtIndex:randSelector];
+    
+    NSMutableDictionary *user;
+    int randSelector;
+    
+    if ([scrubbedUsers count] > 0) {
+        randSelector = arc4random() % [scrubbedUsers count];
+        user = [scrubbedUsers objectAtIndex:randSelector];
+    } else {
+        randSelector = arc4random() % [users count];
+        user = [users objectAtIndex:randSelector];
+    }
     
     _track.artistInformation = user;
     
