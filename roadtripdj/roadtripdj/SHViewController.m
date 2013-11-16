@@ -99,6 +99,8 @@
     NSError *playerError;
     _player = [[AVAudioPlayer alloc] initWithData:track.data error:&playerError];
     _player.delegate = self;
+
+    NSLog([NSString stringWithFormat:@"song is %@", [track.trackInformation objectForKey:@"title"]]);
     
     NSLog(@"before");
     NSLog(@"%@",[playerError localizedDescription]);
