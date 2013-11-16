@@ -112,7 +112,6 @@
         self.cloud = [SoundCloudSearcher new];
         _cloud.target = self;
         _cloud.action = @selector(dataReturned:);
-        
     }
     return self;
 }
@@ -135,6 +134,7 @@
  * TODO: Actually send the cloudPacket to the soundcloudsearcher, update the player, etc
  */
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+    NSLog(@"badnes42s");
     // The last object in the NSArray is the most recent location.
     self.currentLocation = [locations lastObject];
     
@@ -155,7 +155,10 @@
         if (_player == Nil) {
             [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
             [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+            NSLog(@"badnes2s");
         }
+        else
+            NSLog(@"badness");
     }];
 }
 
@@ -183,8 +186,8 @@
     [self drawCircleWithDuration:[track.trackInformation objectForKey:@"duration"]];
     
     
-    //if ([_player isPlaying])
-    //    NSLog(@"LIFTOFF");
+    if ([_player isPlaying])
+        NSLog(@"LIFTOFF");
 }
 
 -(void)drawCircleWithDuration:(NSNumber *)duration
