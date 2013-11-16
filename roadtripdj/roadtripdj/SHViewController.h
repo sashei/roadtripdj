@@ -7,7 +7,20 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <CoreLocation/CoreLocation.h>
 
-@interface SHViewController : UIViewController
+@interface SHViewController : UIViewController <CLLocationManagerDelegate>
+
+@property CLLocationManager *locationManager;
+@property CLLocation *currentLocation;
+@property CLGeocoder *geocoder;
+@property CLPlacemark *currentPlacemark;
+@property NSMutableDictionary *cloudPacket; //data going to the soundcloud searcher
+//@property SoundCloudSearcher *cloud;
+
+// Called by the SoundCloudSearcher when no music is available for the last locality
+- (void)noMusicForLocality;
+
+
 
 @end
