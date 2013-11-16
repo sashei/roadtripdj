@@ -56,6 +56,7 @@
     NSMutableDictionary *user;
     int randSelector;
     
+    // make sure there are users for the given city!
     if ([scrubbedUsers count] > 0) {
         randSelector = arc4random() % [scrubbedUsers count];
         user = [scrubbedUsers objectAtIndex:randSelector];
@@ -67,6 +68,8 @@
     _track.artistInformation = user;
     
     NSLog([user objectForKey:@"full_name"]);
+    
+    [self handleArtist:[user objectForKey:@"id"]];
 }
 
 -(void)handleArtist:(NSString *)user_id
@@ -83,9 +86,8 @@
             [self selectTrack:tracks];
         }
     };
-    
-    NSString *encodedArtist = [user_id stringByReplacingOccurrencesOfString:@" " withString:@"+"];
-    NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/users/.json?client_id=b27fd7cbc5bb8d6cb96603dfabe525ac&q=[%@]",encodedArtist];
+
+    NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/users/%@/tracks.json?client_id=b27fd7cbc5bb8d6cb96603dfabe525ac",user_id];
     [SCRequest performMethod:SCRequestMethodGET
                   onResource:[NSURL URLWithString:resourceURL]
              usingParameters:nil
@@ -113,6 +115,8 @@
                  withAccount:nil
       sendingProgressHandler:nil
              responseHandler:handler];
+    
+    NSLog([NSString stringWithFormat:@"song is %@", [track objectForKey:@"title"]]);
     
 }
 
