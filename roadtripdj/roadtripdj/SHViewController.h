@@ -28,8 +28,10 @@
 @property UILabel *songLabel;
 @property UILabel *artistLabel;
 
-@property UIView *soundCloudLogo;
+@property UIImageView *soundCloudLogo;
 
+@property NSURL *artistPage;
+@property NSURL *soundCloudHome;
 
 // Called by the SoundCloudSearcher when no music is available for the last locality
 - (void)noMusicForLocality;

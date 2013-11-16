@@ -49,7 +49,7 @@
         NSMutableDictionary *user = [users objectAtIndex:i];
         if ([user objectForKey:@"city"] != [NSNull null]) {
             if ([[user objectForKey:@"city"] isEqualToString:city] &&
-                !([[user objectForKey:@"track_count"] isEqualToNumber:[NSNumber numberWithInt: 0]]))
+                (!([[user objectForKey:@"track_count"] isEqualToNumber:[NSNumber numberWithInt: 0]])))
             {
                 [scrubbedUsers addObject:user];
             }

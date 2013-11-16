@@ -83,12 +83,20 @@
         
         [self.view addSubview:_artistLabel];
         
+        // soundcloud logo
         int logoSizeX = self.view.bounds.size.width *.25;
         int logoSizeY = logoSizeX;
         int logoX = CGRectGetMidX(self.view.frame) - logoSizeX *.5;
         int logoY = CGRectGetMidY(self.view.frame) - logoSizeX *.5;
         CGRect logoFrame = CGRectMake(logoX, logoY, logoSizeX, logoSizeY);
         
+        _soundCloudLogo = [[UIImageView alloc] initWithFrame:logoFrame];
+        [_soundCloudLogo setBackgroundColor:[UIColor clearColor]];
+        _soundCloudLogo.image = [UIImage imageNamed:@"sc_logo.png"];
+        [_soundCloudLogo setUserInteractionEnabled:YES];
+        [_soundCloudLogo setTag:1];
+        
+        _soundCloudHome = [[NSURL alloc] initWithString:@"http://www.soundcloud.com"];
         
         // Set up the location manager
         self.locationManager = [[CLLocationManager alloc] init];
@@ -144,9 +152,8 @@
         // We put the locality into the cloudPacket
         [self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
         
-        [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
-        
         if (_player == Nil) {
+            [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
             [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
         }
     }];
@@ -159,8 +166,10 @@
  */
 - (void)dataReturned:(Track *)track {
     
+    [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
     [_songLabel setText:[track.trackInformation objectForKey:@"title"]];
     [_artistLabel setText:[track.artistInformation objectForKey:@"full_name"]];
+    _artistPage = [[NSURL alloc] initWithString:[track.artistInformation objectForKey:@"permalink_url"]];
     
     NSError *playerError;
     _player = [[AVAudioPlayer alloc] initWithData:track.data error:&playerError];
@@ -243,6 +252,20 @@
 
 - (void)noMusicForLocality {
     NSLog(@"We couldn't find any music for this place!");
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch *touch = [touches anyObject];
+    
+    if (touch.view.tag == 0)
+    {
+        if (![[UIApplication sharedApplication] openURL:_artistPage])
+            NSLog(@"%@%@",@"Failed to open url:",[_artistPage description]);
+    } else if (touch.view.tag == 1) {
+        if (![[UIApplication sharedApplication] openURL:_soundCloudHome])
+            NSLog(@"%@%@",@"Failed to open url:",[_soundCloudHome description]);
+    }
 }
 
 @end
