@@ -292,11 +292,11 @@
 {
     UITouch *touch = [touches anyObject];
     
-    if (touch.view.tag == 0)
+    if (CGRectContainsPoint([_artistLabel frame], [touch locationInView:self.view]))
     {
         if (![[UIApplication sharedApplication] openURL:_artistPage])
             NSLog(@"%@%@",@"Failed to open url:",[_artistPage description]);
-    } else if (touch.view.tag == 1) {
+    } else if (CGRectContainsPoint([_soundCloudLogo frame], [touch locationInView:self.view])){
         if (![[UIApplication sharedApplication] openURL:_soundCloudHome])
             NSLog(@"%@%@",@"Failed to open url:",[_soundCloudHome description]);
     }
