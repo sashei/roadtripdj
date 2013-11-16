@@ -26,7 +26,7 @@
         
         // welcome label
         int welcomeX = self.view.bounds.size.width *.05;
-        int welcomeY = welcomeX;
+        int welcomeY = self.view.bounds.size.height *.05;
         int welcomeSizeX = self.view.bounds.size.width *.9;
         int welcomeSizeY = self.view.bounds.size.height*.1;
         CGRect welcomeFrame = CGRectMake(welcomeX, welcomeY, welcomeSizeX, welcomeSizeY);
@@ -55,23 +55,23 @@
         
         // song name
         int songX = self.view.bounds.size.width *.05;
-        int songY = welcomeSizeY;
+        int songY = self.view.bounds.size.height *.8;
         int songSizeX = self.view.bounds.size.width *.9;
-        int songSizeY = self.view.bounds.size.height *.15;
+        int songSizeY = self.view.bounds.size.height *.07;
         CGRect songFrame = CGRectMake(songX, songY, songSizeX, songSizeY);
         
         _songLabel = [[UILabel alloc] initWithFrame:songFrame];
         [_songLabel setTextColor:[UIColor whiteColor]];
         [_songLabel setTextAlignment:NSTextAlignmentCenter];
-        [_songLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:30]];
+        [_songLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:20]];
         
         [self.view addSubview:_songLabel];
         
         // artist name
         int artX = self.view.bounds.size.width *.05;
-        int artY = welcomeSizeY;
+        int artY = self.view.bounds.size.height *.87;
         int artSizeX = self.view.bounds.size.width *.9;
-        int artSizeY = self.view.bounds.size.height *.15;
+        int artSizeY = self.view.bounds.size.height *.075;
         CGRect artFrame = CGRectMake(artX, artY, artSizeX, artSizeY);
         
         _artistLabel = [[UILabel alloc] initWithFrame:artFrame];
@@ -148,10 +148,12 @@
 
 /*
  * Called by the soundcloud searcher after a new song has been found.
- * Starts playing the song, and calls a helper function to redraw the
- * UI.
+ * Starts playing the song, and updates fields
  */
 - (void)dataReturned:(Track *)track {
+    
+    [_songLabel setText:[track.trackInformation objectForKey:@"title"]];
+    [_artistLabel setText:[track.artistInformation objectForKey:@"full_name"]];
     
     NSError *playerError;
     _player = [[AVAudioPlayer alloc] initWithData:track.data error:&playerError];
@@ -188,7 +190,7 @@
     
     // Configure animation
     CABasicAnimation *drawAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
-    drawAnimation.duration            = 10.0;
+    drawAnimation.duration            = [duration doubleValue]/1000.0;
     drawAnimation.repeatCount         = 1.0;
     drawAnimation.removedOnCompletion = YES;
     drawAnimation.delegate = self;
