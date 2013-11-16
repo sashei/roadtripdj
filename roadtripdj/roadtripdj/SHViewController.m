@@ -100,13 +100,20 @@
     _player = [[AVAudioPlayer alloc] initWithData:track.data error:&playerError];
     _player.delegate = self;
     
+    NSLog(@"before");
     NSLog(@"%@",[playerError localizedDescription]);
+    NSLog(@"%f", _player.duration);
+    _player.volume = 1.0;
+    NSLog(@"%f", _player.volume);
+    NSLog(@"after");
     
     [_player prepareToPlay];
     [_player play];
+
     
     if ([_player isPlaying])
         NSLog(@"LIFTOFF");
+        
 }
 
 
