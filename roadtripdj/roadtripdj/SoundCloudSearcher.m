@@ -12,8 +12,6 @@
 
 -(void)handleCity:(NSString *)city
 {
-    __block NSArray *users = [NSArray new];
-    
     SCRequestResponseHandler handler;
     handler = ^(NSURLResponse *response, NSData *data, NSError *error) {
         NSError *jsonError = nil;
@@ -22,18 +20,23 @@
                                              options:0
                                              error:&jsonError];
         if (!jsonError && [jsonResponse isKindOfClass:[NSArray class]]) {
-            users = (NSArray *)jsonResponse;
+            NSArray *users = (NSArray *)jsonResponse;
+            [self scrubUsers:users fromCity:city];
         }
     };
     
-    NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/users.json?q=[%@]",city];
+    NSString *encodedCity = [city stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+    NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/users.json?client_id=b27fd7cbc5bb8d6cb96603dfabe525ac&q=[%@]",encodedCity];
     [SCRequest performMethod:SCRequestMethodGET
                   onResource:[NSURL URLWithString:resourceURL]
              usingParameters:nil
                  withAccount:nil
       sendingProgressHandler:nil
              responseHandler:handler];
-    
+}
+
+-(void)scrubUsers:(NSArray *)users fromCity:(NSString *)city
+{
     NSMutableArray *scrubbedUsers = [NSMutableArray new];
     int foundUsers = [users count];
     
@@ -42,15 +45,24 @@
     for (int i = 0; i < foundUsers; ++i)
     {
         NSMutableDictionary *user = [users objectAtIndex:i];
-        if ([[user objectForKey:@"city"] isEqualToString:city] &&
-            !([user objectForKey:@"track_count"] == 0))
-            [scrubbedUsers addObject:user];
+        if (!((NSNull *) [user objectForKey:@"city"] == [NSNull null])) {
+            if ([[user objectForKey:@"city"] isEqualToString:city] &&
+                !([user objectForKey:@"track_count"] == 0))
+                [scrubbedUsers addObject:user];
+        }
     }
     
     int randSelector = arc4random() % [scrubbedUsers count];
     NSMutableDictionary *user = [scrubbedUsers objectAtIndex:randSelector];
     
     _track.artistInformation = user;
+    
+    NSLog([user objectForKey:@"full_name"]);
+}
+
+-(void)doneParsingData
+{
+    [_target performSelector:_action withObject:_track];
 }
 
 @end

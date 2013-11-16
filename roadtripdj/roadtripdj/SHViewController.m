@@ -39,6 +39,12 @@
             NSLog(@"LIFTOFF");
         
         NSLog(@"Loaded!");
+
+        
+        _cloud = [SoundCloudSearcher new];
+        _cloud.target = self;
+        _cloud.action = @selector(dataReturned:);
+
     }
     return self;
 }
@@ -81,11 +87,13 @@
         
         // We put the locality into the cloudPacket
         [self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
+        [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
     }];
     
     // Pass the city to the soundcloud searcher
     //[self.cloud handleCity:[self.currentPlacemark locality]];
 }
+
 
 //- (void)songDataReceived {
 //    // _songData = the new song data
@@ -95,6 +103,12 @@
 //    [self.player initWithContentsOfURL:[NSURL URLWithString:] error:playerError];
 //    self.player.delegate = self;
 //}
+
+-(void)dataReturned:(Track *)track
+{
+    //TODO
+}
+
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"Getting location failed!");

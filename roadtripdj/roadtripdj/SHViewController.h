@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import "SoundCloudSearcher.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SoundCloudSearcher.h>
 
@@ -21,6 +22,7 @@
 @property NSMutableDictionary *cloudPacket; //data going to the soundcloud searcher
 @property SoundCloudSearcher *cloud;
 @property NSMutableDictionary *songData;
+
 
 // Called by the SoundCloudSearcher when no music is available for the last locality
 - (void)noMusicForLocality;
