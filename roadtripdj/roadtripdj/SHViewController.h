@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import "SoundCloudSearcher.h"
 
 @interface SHViewController : UIViewController <CLLocationManagerDelegate>
 
@@ -16,7 +17,7 @@
 @property CLGeocoder *geocoder;
 @property CLPlacemark *currentPlacemark;
 @property NSMutableDictionary *cloudPacket; //data going to the soundcloud searcher
-//@property SoundCloudSearcher *cloud;
+@property SoundCloudSearcher *cloud;
 
 // Called by the SoundCloudSearcher when no music is available for the last locality
 - (void)noMusicForLocality;

@@ -13,10 +13,14 @@
 #import "SCSoundCloud.h"
 #import "SCAccount.h"
 #import "SCRequest.h"
+#import <stdlib.h>
 
 @interface SoundCloudSearcher : NSObject
 
 @property Track *track;
+
+@property id target;
+@property SEL action;
 
 -(void)handleCity:(NSString *)city;
 

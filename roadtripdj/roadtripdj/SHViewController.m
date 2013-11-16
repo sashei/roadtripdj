@@ -28,6 +28,10 @@
         // Create the cloud packet
         self.cloudPacket = [NSMutableDictionary new];
         //NSLog(@"Loaded!");
+        
+        _cloud = [SoundCloudSearcher new];
+        _cloud.target = self;
+        _cloud.action = @selector(dataReturned:);
     }
     return self;
 }
@@ -69,7 +73,13 @@
         
         // We put the locality into the cloudPacket
         [self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
+        [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
     }];
+}
+
+-(void)dataReturned:(Track *)track
+{
+    //TODO
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
