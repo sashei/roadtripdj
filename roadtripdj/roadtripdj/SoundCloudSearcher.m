@@ -103,8 +103,9 @@
     NSMutableDictionary *track = [tracks objectAtIndex:randTrack];
     _track.trackInformation = track;
     
+    NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/tracks/%@/stream?consumer_id=b27fd7cbc5bb8d6cb96603dfabe525ac",[track objectForKey:@"id"]];
     [SCRequest performMethod:SCRequestMethodGET
-                onResource:[NSURL URLWithString:[track objectForKey:@"stream_url"]]
+                onResource:[NSURL URLWithString:resourceURL]
                 usingParameters:nil
                 withAccount:nil
                 sendingProgressHandler:nil
