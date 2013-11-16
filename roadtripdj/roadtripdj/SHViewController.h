@@ -22,6 +22,7 @@
 @property NSMutableDictionary *cloudPacket; //data going to the soundcloud searcher
 @property SoundCloudSearcher *cloud;
 @property NSMutableDictionary *songData;
+@property AVAudioSession *session;
 
 @property UILabel *welcomeLabel;
 @property UILabel *cityLabel;

@@ -17,6 +17,10 @@
 - (id)init {
     self = [super init];
     if (self) {
+        // Audio session
+        _session = [AVAudioSession sharedInstance];
+        NSError *trash;
+        [_session setCategory:@"AVAudioSessionCategoryPlayback" error:&trash];
         
         // view stuff
         // UIColors
