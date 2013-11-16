@@ -103,18 +103,14 @@
     NSMutableDictionary *track = [tracks objectAtIndex:randTrack];
     _track.trackInformation = track;
     
-    SCRequestResponseHandler handler;
-    handler = ^(NSURLResponse *response, NSData *data, NSError *error) {
-        [self setTrackData:data];
-    };
-    
-    NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/tracks/%@.json?client_id=b27fd7cbc5bb8d6cb96603dfabe525ac",[track objectForKey:@"id"]];
     [SCRequest performMethod:SCRequestMethodGET
-                  onResource:[NSURL URLWithString:resourceURL]
-             usingParameters:nil
-                 withAccount:nil
-      sendingProgressHandler:nil
-             responseHandler:handler];
+                onResource:[NSURL URLWithString:[track objectForKey:@"stream_url"]]
+                usingParameters:nil
+                withAccount:nil
+                sendingProgressHandler:nil
+                responseHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                 [self setTrackData:data];
+             }];
     
     NSLog([NSString stringWithFormat:@"song is %@", [track objectForKey:@"title"]]);
     
