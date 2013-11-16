@@ -17,7 +17,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        //NSLog(@"loading..");
+        NSLog(@"loading..");
         // Set up the location manager
         self.locationManager = [[CLLocationManager alloc] init];
         self.locationManager.delegate = self;
@@ -27,7 +27,18 @@
         self.geocoder = [[CLGeocoder alloc] init];
         // Create the cloud packet
         self.cloudPacket = [NSMutableDictionary new];
-        //NSLog(@"Loaded!");
+        
+        self.cloud = [SoundCloudSearcher new];
+        NSError *playerError;
+        
+        _player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL URLWithString:@"http://api.soundcloud.com/tracks/13158665/stream"]error:&playerError];
+        
+        NSLog(@"%@",[playerError localizedDescription]);
+        
+        if ([_player isPlaying])
+            NSLog(@"LIFTOFF");
+        
+        NSLog(@"Loaded!");
     }
     return self;
 }
@@ -43,6 +54,7 @@
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark Location Manager Interactions
 /*
  * Get the new location from the location manager.
  * TODO: Store some number of old locations in case new location has no music?
@@ -70,11 +82,36 @@
         // We put the locality into the cloudPacket
         [self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
     }];
+    
+    // Pass the city to the soundcloud searcher
+    //[self.cloud handleCity:[self.currentPlacemark locality]];
 }
+
+//- (void)songDataReceived {
+//    // _songData = the new song data
+//    
+//    // // Play the song
+//    NSError *playerError;
+//    [self.player initWithContentsOfURL:[NSURL URLWithString:] error:playerError];
+//    self.player.delegate = self;
+//}
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"Getting location failed!");
 }
+
+#pragma mark AV Audio Player interactions
+
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    NSLog(@"Player is done!");
+    // Request another song from the soundcloud searcher, using the new location
+    //[self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
+}
+
+- (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
+    NSLog(@"Decode error from av player");
+}
+
 
 - (void)noMusicForLocality {
     NSLog(@"We couldn't find any music for this place!");
