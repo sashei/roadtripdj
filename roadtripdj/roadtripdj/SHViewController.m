@@ -39,7 +39,6 @@
         CGRect welcomeFrame = CGRectMake(welcomeX, welcomeY, welcomeSizeX, welcomeSizeY);
         
         _welcomeLabel = [[UILabel alloc] initWithFrame:welcomeFrame];
-        [_welcomeLabel setText:@"Welcome to"];
         [_welcomeLabel setTextColor:[UIColor whiteColor]];
         [_welcomeLabel setTextAlignment:NSTextAlignmentCenter];
         [_welcomeLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:20]];
@@ -164,6 +163,7 @@
         [self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
         
         if (_player == Nil) {
+            [_welcomeLabel setText:@"Welcome to"];
             [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
             [_artistLabel setText:@"Loading..."];
             [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
