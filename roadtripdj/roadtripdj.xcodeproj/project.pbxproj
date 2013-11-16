@@ -9,14 +9,6 @@
 /* Begin PBXBuildFile section */
 		67600C03183792F4008BFC99 /* sc_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 67600C01183792F4008BFC99 /* sc_logo.png */; };
 		67600C04183792F4008BFC99 /* sc_logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 67600C02183792F4008BFC99 /* sc_logo@2x.png */; };
-		67600C1D1837A3C3008BFC99 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 67600C0F1837A3C3008BFC99 /* InfoPlist.strings */; };
-		67600C1E1837A3C3008BFC99 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 67600C111837A3C3008BFC99 /* Images.xcassets */; };
-		67600C1F1837A3C3008BFC99 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 67600C121837A3C3008BFC99 /* main.m */; };
-		67600C201837A3C3008BFC99 /* roadtripdj-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 67600C131837A3C3008BFC99 /* roadtripdj-Info.plist */; };
-		67600C211837A3C3008BFC99 /* SHAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 67600C161837A3C3008BFC99 /* SHAppDelegate.m */; };
-		67600C221837A3C3008BFC99 /* SHViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 67600C181837A3C3008BFC99 /* SHViewController.m */; };
-		67600C231837A3C3008BFC99 /* SoundCloudSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 67600C1A1837A3C3008BFC99 /* SoundCloudSearcher.m */; };
-		67600C241837A3C3008BFC99 /* Track.m in Sources */ = {isa = PBXBuildFile; fileRef = 67600C1C1837A3C3008BFC99 /* Track.m */; };
 		7D7C1B67183722CB00CDD084 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D7C1B66183722CB00CDD084 /* Foundation.framework */; };
 		7D7C1B69183722CB00CDD084 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D7C1B68183722CB00CDD084 /* CoreGraphics.framework */; };
 		7D7C1B6B183722CB00CDD084 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D7C1B6A183722CB00CDD084 /* UIKit.framework */; };
@@ -156,19 +148,6 @@
 /* Begin PBXFileReference section */
 		67600C01183792F4008BFC99 /* sc_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sc_logo.png; path = ../../../sc_logo.png; sourceTree = "<group>"; };
 		67600C02183792F4008BFC99 /* sc_logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "sc_logo@2x.png"; path = "../../../sc_logo@2x.png"; sourceTree = "<group>"; };
-		67600C101837A3C3008BFC99 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		67600C111837A3C3008BFC99 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		67600C121837A3C3008BFC99 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		67600C131837A3C3008BFC99 /* roadtripdj-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "roadtripdj-Info.plist"; sourceTree = "<group>"; };
-		67600C141837A3C3008BFC99 /* roadtripdj-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "roadtripdj-Prefix.pch"; sourceTree = "<group>"; };
-		67600C151837A3C3008BFC99 /* SHAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHAppDelegate.h; sourceTree = "<group>"; };
-		67600C161837A3C3008BFC99 /* SHAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHAppDelegate.m; sourceTree = "<group>"; };
-		67600C171837A3C3008BFC99 /* SHViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SHViewController.h; sourceTree = "<group>"; };
-		67600C181837A3C3008BFC99 /* SHViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SHViewController.m; sourceTree = "<group>"; };
-		67600C191837A3C3008BFC99 /* SoundCloudSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundCloudSearcher.h; sourceTree = "<group>"; };
-		67600C1A1837A3C3008BFC99 /* SoundCloudSearcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundCloudSearcher.m; sourceTree = "<group>"; };
-		67600C1B1837A3C3008BFC99 /* Track.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Track.h; sourceTree = "<group>"; };
-		67600C1C1837A3C3008BFC99 /* Track.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Track.m; sourceTree = "<group>"; };
 		7D7C1B63183722CB00CDD084 /* roadtripdj.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = roadtripdj.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D7C1B66183722CB00CDD084 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		7D7C1B68183722CB00CDD084 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -239,26 +218,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		67600C0E1837A3C3008BFC99 /* roadtripdj */ = {
-			isa = PBXGroup;
-			children = (
-				67600C0F1837A3C3008BFC99 /* InfoPlist.strings */,
-				67600C111837A3C3008BFC99 /* Images.xcassets */,
-				67600C121837A3C3008BFC99 /* main.m */,
-				67600C131837A3C3008BFC99 /* roadtripdj-Info.plist */,
-				67600C141837A3C3008BFC99 /* roadtripdj-Prefix.pch */,
-				67600C151837A3C3008BFC99 /* SHAppDelegate.h */,
-				67600C161837A3C3008BFC99 /* SHAppDelegate.m */,
-				67600C171837A3C3008BFC99 /* SHViewController.h */,
-				67600C181837A3C3008BFC99 /* SHViewController.m */,
-				67600C191837A3C3008BFC99 /* SoundCloudSearcher.h */,
-				67600C1A1837A3C3008BFC99 /* SoundCloudSearcher.m */,
-				67600C1B1837A3C3008BFC99 /* Track.h */,
-				67600C1C1837A3C3008BFC99 /* Track.m */,
-			);
-			name = roadtripdj;
-			sourceTree = "<group>";
-		};
 		7D7C1B5A183722CB00CDD084 = {
 			isa = PBXGroup;
 			children = (
@@ -322,7 +281,6 @@
 			children = (
 				67600C01183792F4008BFC99 /* sc_logo.png */,
 				67600C02183792F4008BFC99 /* sc_logo@2x.png */,
-				67600C0E1837A3C3008BFC99 /* roadtripdj */,
 				7D7C1B6E183722CB00CDD084 /* roadtripdj-Info.plist */,
 				7D7C1B6F183722CB00CDD084 /* InfoPlist.strings */,
 				7D7C1B72183722CB00CDD084 /* main.m */,
@@ -563,13 +521,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				67600C201837A3C3008BFC99 /* roadtripdj-Info.plist in Resources */,
 				67600C03183792F4008BFC99 /* sc_logo.png in Resources */,
 				67600C04183792F4008BFC99 /* sc_logo@2x.png in Resources */,
 				7D7C1B7F183722CB00CDD084 /* Images.xcassets in Resources */,
-				67600C1E1837A3C3008BFC99 /* Images.xcassets in Resources */,
 				7D7C1B71183722CB00CDD084 /* InfoPlist.strings in Resources */,
-				67600C1D1837A3C3008BFC99 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -591,13 +546,8 @@
 				7DB433891837399800A971DF /* SoundCloudSearcher.m in Sources */,
 				7D7C1B73183722CB00CDD084 /* main.m in Sources */,
 				7D7C1B7D183722CB00CDD084 /* SHViewController.m in Sources */,
-				67600C241837A3C3008BFC99 /* Track.m in Sources */,
 				7D8067B518373A820009F395 /* Track.m in Sources */,
-				67600C1F1837A3C3008BFC99 /* main.m in Sources */,
 				7D7C1B77183722CB00CDD084 /* SHAppDelegate.m in Sources */,
-				67600C231837A3C3008BFC99 /* SoundCloudSearcher.m in Sources */,
-				67600C211837A3C3008BFC99 /* SHAppDelegate.m in Sources */,
-				67600C221837A3C3008BFC99 /* SHViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -645,14 +595,6 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		67600C0F1837A3C3008BFC99 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				67600C101837A3C3008BFC99 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
 		7D7C1B6F183722CB00CDD084 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
