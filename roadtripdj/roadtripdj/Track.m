@@ -10,12 +10,13 @@
 
 @implementation Track
 
--(id)initWithTrack:(NSMutableDictionary *)track andArtist:(NSMutableDictionary *)artist
+-(id)initWithTrack:(NSMutableDictionary *)track andArtist:(NSMutableDictionary *)artist andData:(NSData *)data
 {
     self = [super init];
     if (self) {
         _trackInformation = track;
         _artistInformation = artist;
+        _data = data;
     }
     
     return self;

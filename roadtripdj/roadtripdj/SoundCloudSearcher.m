@@ -60,7 +60,60 @@
     NSLog([user objectForKey:@"full_name"]);
 }
 
--(void)doneParsingData
+-(void)handleArtist:(NSString *)user_id
+{
+    SCRequestResponseHandler handler;
+    handler = ^(NSURLResponse *response, NSData *data, NSError *error) {
+        NSError *jsonError = nil;
+        NSJSONSerialization *jsonResponse = [NSJSONSerialization
+                                             JSONObjectWithData:data
+                                             options:0
+                                             error:&jsonError];
+        if (!jsonError && [jsonResponse isKindOfClass:[NSArray class]]) {
+            NSArray *tracks = (NSArray *)jsonResponse;
+            [self selectTrack:tracks];
+        }
+    };
+    
+    NSString *encodedArtist = [user_id stringByReplacingOccurrencesOfString:@" " withString:@"+"];
+    NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/users/.json?client_id=b27fd7cbc5bb8d6cb96603dfabe525ac&q=[%@]",encodedArtist];
+    [SCRequest performMethod:SCRequestMethodGET
+                  onResource:[NSURL URLWithString:resourceURL]
+             usingParameters:nil
+                 withAccount:nil
+      sendingProgressHandler:nil
+             responseHandler:handler];
+}
+
+-(void)selectTrack:(NSArray *)tracks
+{
+    int randTrack = arc4random() % [tracks count];
+    
+    NSMutableDictionary *track = [tracks objectAtIndex:randTrack];
+    _track.trackInformation = track;
+    
+    SCRequestResponseHandler handler;
+    handler = ^(NSURLResponse *response, NSData *data, NSError *error) {
+        [self setTrackData:data];
+    };
+    
+    NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/tracks/%@.json?client_id=b27fd7cbc5bb8d6cb96603dfabe525ac",[track objectForKey:@"id"]];
+    [SCRequest performMethod:SCRequestMethodGET
+                  onResource:[NSURL URLWithString:resourceURL]
+             usingParameters:nil
+                 withAccount:nil
+      sendingProgressHandler:nil
+             responseHandler:handler];
+    
+}
+
+-(void)setTrackData:(NSData *)data
+{
+    _track.data = data;
+    [self doneSearching];
+}
+
+-(void)doneSearching
 {
     [_target performSelector:_action withObject:_track];
 }

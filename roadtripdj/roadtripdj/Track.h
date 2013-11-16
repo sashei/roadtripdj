@@ -12,5 +12,6 @@
 
 @property NSMutableDictionary *trackInformation;
 @property NSMutableDictionary *artistInformation;
+@property NSData *data;
 
 @end
