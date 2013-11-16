@@ -14,6 +14,8 @@
 {
     _track = [Track new];
     
+    NSLog([NSString stringWithFormat:@"handling %@", city]);
+    
     SCRequestResponseHandler handler;
     handler = ^(NSURLResponse *response, NSData *data, NSError *error) {
         NSError *jsonError = nil;
@@ -42,15 +44,22 @@
     NSMutableArray *scrubbedUsers = [NSMutableArray new];
     int foundUsers = [users count];
     
+    NSLog([NSString stringWithFormat:@"City is %@", city]);
+    
     // loop through all users found by the json query and filter them by users that are actually from
     // the given city that actually have tracks up
     for (int i = 0; i < foundUsers; ++i)
     {
         NSMutableDictionary *user = [users objectAtIndex:i];
-        if (!((NSNull *) [user objectForKey:@"city"] == [NSNull null])) {
+        if ([user objectForKey:@"city"] != [NSNull null]) {
+            NSLog(@"outer if");
+            NSLog([NSString stringWithFormat:@"user thinks %@", [user objectForKey:@"city"]]);
             if ([[user objectForKey:@"city"] isEqualToString:city] &&
                 !([user objectForKey:@"track_count"] == 0))
+            {
                 [scrubbedUsers addObject:user];
+                NSLog([NSString stringWithFormat:@"Adding user from %@", [user objectForKey:@"city"]]);
+            }
         }
     }
     
@@ -68,8 +77,6 @@
     }
     
     _track.artistInformation = user;
-    NSLog(@"Hi!");
-    NSLog([user objectForKey:@"full_name"]);
     
     [self handleArtist:[user objectForKey:@"id"]];
 }
@@ -114,10 +121,6 @@
                 responseHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
                  [self setTrackData:data];
              }];
-    
-    NSLog([NSString stringWithFormat:@"%@", [track objectForKey:@"id"]]);
-    
-    NSLog([NSString stringWithFormat:@"song is %@", [track objectForKey:@"title"]]);
     
 }
 

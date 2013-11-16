@@ -94,7 +94,6 @@
  * UI.
  */
 - (void)dataReturned:(Track *)track {
-    NSLog(@"Data returned is happening");
     
     NSError *playerError;
     _player = [[AVAudioPlayer alloc] initWithData:track.data error:&playerError];
@@ -106,9 +105,8 @@
     [_player play];
 
     
-    if ([_player isPlaying])
-        NSLog(@"LIFTOFF");
-        
+    //if ([_player isPlaying])
+    //    NSLog(@"LIFTOFF");
 }
 
 
