@@ -83,6 +83,13 @@
         
         [self.view addSubview:_artistLabel];
         
+        int logoSizeX = self.view.bounds.size.width *.25;
+        int logoSizeY = logoSizeX;
+        int logoX = CGRectGetMidX(self.view.frame) - logoSizeX *.5;
+        int logoY = CGRectGetMidY(self.view.frame) - logoSizeX *.5;
+        CGRect logoFrame = CGRectMake(logoX, logoY, logoSizeX, logoSizeY);
+        
+        
         // Set up the location manager
         self.locationManager = [[CLLocationManager alloc] init];
         self.locationManager.delegate = self;
@@ -97,8 +104,6 @@
         self.cloud = [SoundCloudSearcher new];
         _cloud.target = self;
         _cloud.action = @selector(dataReturned:);
-
-        NSLog(@"badnes25s");
     }
     return self;
 }
@@ -163,14 +168,14 @@
     NSError *playerError;
     _player = [[AVAudioPlayer alloc] initWithData:track.data error:&playerError];
     _player.delegate = self;
-
+    
     _player.volume = 1.0;
     NSLog(@"%f", _player.duration);
     
     [_player prepareToPlay];
     [_player play];
     [self drawCircleWithDuration:[track.trackInformation objectForKey:@"duration"]];
-
+    
     
     if ([_player isPlaying])
         NSLog(@"LIFTOFF");
@@ -180,7 +185,7 @@
 {
     int radius = 120;
     CAShapeLayer *circle = [CAShapeLayer layer];
-
+    
     circle.path = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, 2.0*radius, 2.0*radius)
                                              cornerRadius:radius].CGPath;
     // Center the shape in self.view
@@ -222,7 +227,6 @@
     }
 }
 
-
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"Getting location failed!");
 }
@@ -230,6 +234,7 @@
 #pragma mark AV Audio Player interactions
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    NSLog(@"Player is done!");
     // Request another song from the soundcloud searcher, using the new location
     [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
 }
