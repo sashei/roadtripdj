@@ -171,8 +171,6 @@
 
 -(void)drawCircleWithDuration:(NSNumber *)duration
 {
-    NSLog(@"drawing circle");
-    
     int radius = 120;
     CAShapeLayer *circle = [CAShapeLayer layer];
 
@@ -194,7 +192,7 @@
     drawAnimation.repeatCount         = 1.0;
     drawAnimation.removedOnCompletion = YES;
     drawAnimation.delegate = self;
-    //[drawAnimation setValue:objectLayer forKey:@"parentLayer"];
+    [drawAnimation setValue:circle forKey:@"parentLayer"];
     
     // Animate from no part of the stroke being drawn to the entire stroke being drawn
     drawAnimation.fromValue = [NSNumber numberWithFloat:0.0f];
@@ -208,6 +206,15 @@
     
 }
 
+- (void)animationDidStop:(CAAnimation *)theAnimation finished:(BOOL)flag
+{
+    CALayer *layer = [theAnimation valueForKey:@"parentLayer"];
+    if( layer )
+    {
+        [layer removeFromSuperlayer];
+    }
+}
+
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"Getting location failed!");
@@ -216,7 +223,6 @@
 #pragma mark AV Audio Player interactions
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
-    NSLog(@"Player is done!");
     // Request another song from the soundcloud searcher, using the new location
     [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
 }
