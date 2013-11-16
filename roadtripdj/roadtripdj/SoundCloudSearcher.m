@@ -114,7 +114,6 @@
                 responseHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
                  [self setTrackData:data];
              }];
-    
 }
 
 -(void)setTrackData:(NSData *)data

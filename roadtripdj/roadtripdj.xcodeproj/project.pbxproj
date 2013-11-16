@@ -398,6 +398,13 @@
 				LastUpgradeCheck = 0500;
 				ORGANIZATIONNAME = "Sasha Heinen";
 				TargetAttributes = {
+					7D7C1B62183722CB00CDD084 = {
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+						};
+					};
 					7D7C1B83183722CB00CDD084 = {
 						TestTargetID = 7D7C1B62183722CB00CDD084;
 					};
