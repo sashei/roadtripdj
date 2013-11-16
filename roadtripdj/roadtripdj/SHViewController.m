@@ -26,7 +26,7 @@
         
         // welcome label
         int welcomeX = self.view.bounds.size.width *.05;
-        int welcomeY = self.view.bounds.size.height *.05;
+        int welcomeY = welcomeX;
         int welcomeSizeX = self.view.bounds.size.width *.9;
         int welcomeSizeY = self.view.bounds.size.height*.1;
         CGRect welcomeFrame = CGRectMake(welcomeX, welcomeY, welcomeSizeX, welcomeSizeY);
@@ -55,23 +55,23 @@
         
         // song name
         int songX = self.view.bounds.size.width *.05;
-        int songY = self.view.bounds.size.height *.8;
+        int songY = welcomeSizeY;
         int songSizeX = self.view.bounds.size.width *.9;
-        int songSizeY = self.view.bounds.size.height *.07;
+        int songSizeY = self.view.bounds.size.height *.15;
         CGRect songFrame = CGRectMake(songX, songY, songSizeX, songSizeY);
         
         _songLabel = [[UILabel alloc] initWithFrame:songFrame];
         [_songLabel setTextColor:[UIColor whiteColor]];
         [_songLabel setTextAlignment:NSTextAlignmentCenter];
-        [_songLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:20]];
+        [_songLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:30]];
         
         [self.view addSubview:_songLabel];
         
         // artist name
         int artX = self.view.bounds.size.width *.05;
-        int artY = self.view.bounds.size.height *.87;
+        int artY = welcomeSizeY;
         int artSizeX = self.view.bounds.size.width *.9;
-        int artSizeY = self.view.bounds.size.height *.075;
+        int artSizeY = self.view.bounds.size.height *.15;
         CGRect artFrame = CGRectMake(artX, artY, artSizeX, artSizeY);
         
         _artistLabel = [[UILabel alloc] initWithFrame:artFrame];
@@ -148,12 +148,10 @@
 
 /*
  * Called by the soundcloud searcher after a new song has been found.
- * Starts playing the song, and updates fields
+ * Starts playing the song, and calls a helper function to redraw the
+ * UI.
  */
 - (void)dataReturned:(Track *)track {
-    
-    [_songLabel setText:[track.trackInformation objectForKey:@"title"]];
-    [_artistLabel setText:[track.artistInformation objectForKey:@"full_name"]];
     
     NSError *playerError;
     _player = [[AVAudioPlayer alloc] initWithData:track.data error:&playerError];
@@ -173,6 +171,8 @@
 
 -(void)drawCircleWithDuration:(NSNumber *)duration
 {
+    NSLog(@"drawing circle");
+    
     int radius = 120;
     CAShapeLayer *circle = [CAShapeLayer layer];
 
@@ -190,11 +190,11 @@
     
     // Configure animation
     CABasicAnimation *drawAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
-    drawAnimation.duration            = [duration doubleValue]/1000.0;
+    drawAnimation.duration            = 10.0;
     drawAnimation.repeatCount         = 1.0;
     drawAnimation.removedOnCompletion = YES;
     drawAnimation.delegate = self;
-    [drawAnimation setValue:circle forKey:@"parentLayer"];
+    //[drawAnimation setValue:objectLayer forKey:@"parentLayer"];
     
     // Animate from no part of the stroke being drawn to the entire stroke being drawn
     drawAnimation.fromValue = [NSNumber numberWithFloat:0.0f];
@@ -208,15 +208,6 @@
     
 }
 
-- (void)animationDidStop:(CAAnimation *)theAnimation finished:(BOOL)flag
-{
-    CALayer *layer = [theAnimation valueForKey:@"parentLayer"];
-    if( layer )
-    {
-        [layer removeFromSuperlayer];
-    }
-}
-
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
     NSLog(@"Getting location failed!");
@@ -225,6 +216,7 @@
 #pragma mark AV Audio Player interactions
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    NSLog(@"Player is done!");
     // Request another song from the soundcloud searcher, using the new location
     [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
 }
