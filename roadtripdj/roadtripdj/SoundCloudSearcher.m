@@ -40,6 +40,7 @@
 -(void)scrubUsers:(NSArray *)users fromCity:(NSString *)city
 {
     NSMutableArray *scrubbedUsers = [NSMutableArray new];
+    NSMutableArray *scrubbedCityUsers = [NSMutableArray new];
     int foundUsers = [users count];
     
     // loop through all users found by the json query and filter them by users that are actually from
@@ -52,10 +53,12 @@
                 (!([[user objectForKey:@"track_count"] isEqualToNumber:[NSNumber numberWithInt: 0]])))
             {
                 [scrubbedUsers addObject:user];
+            } else if (!([[user objectForKey:@"track_count"] isEqualToNumber:[NSNumber numberWithInt: 0]]))
+            {
+                [scrubbedCityUsers addObject:user];
             }
         }
     }
-    
     
     NSMutableDictionary *user;
     int randSelector;
@@ -65,8 +68,8 @@
         randSelector = arc4random() % [scrubbedUsers count];
         user = [scrubbedUsers objectAtIndex:randSelector];
     } else {
-        randSelector = arc4random() % [users count];
-        user = [users objectAtIndex:randSelector];
+        randSelector = arc4random() % [scrubbedCityUsers count];
+        user = [scrubbedCityUsers objectAtIndex:randSelector];
     }
     
     _track.artistInformation = user;

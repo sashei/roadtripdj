@@ -88,7 +88,7 @@
         [self.view addSubview:_artistLabel];
         
         // soundcloud logo
-        int logoSizeX = self.view.bounds.size.width *.25;
+        int logoSizeX = self.view.bounds.size.width *.4;
         int logoSizeY = logoSizeX;
         int logoX = CGRectGetMidX(self.view.frame) - logoSizeX *.5;
         int logoY = CGRectGetMidY(self.view.frame) - logoSizeX *.5;
@@ -96,9 +96,13 @@
         
         _soundCloudLogo = [[UIImageView alloc] initWithFrame:logoFrame];
         [_soundCloudLogo setBackgroundColor:[UIColor clearColor]];
-        _soundCloudLogo.image = [UIImage imageNamed:@"sc_logo.png"];
+        NSString *imagePath = [[[NSBundle mainBundle] resourcePath] stringByAppendingPathComponent:@"sc_logo.png"];
+        _soundCloudLogo.image = [UIImage imageWithContentsOfFile:imagePath];
+        [_soundCloudLogo setContentMode:UIViewContentModeScaleAspectFit];
         [_soundCloudLogo setUserInteractionEnabled:YES];
         [_soundCloudLogo setTag:1];
+        
+        [self.view addSubview:_soundCloudLogo];
         
         _soundCloudHome = [[NSURL alloc] initWithString:@"http://www.soundcloud.com"];
         
@@ -138,7 +142,6 @@
  * TODO: Actually send the cloudPacket to the soundcloudsearcher, update the player, etc
  */
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    NSLog(@"badnes42s");
     // The last object in the NSArray is the most recent location.
     self.currentLocation = [locations lastObject];
     
@@ -159,10 +162,7 @@
         if (_player == Nil) {
             [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
             [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-            NSLog(@"badnes2s");
         }
-        else
-            NSLog(@"badness");
     }];
 }
 
