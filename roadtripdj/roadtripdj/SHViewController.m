@@ -192,14 +192,13 @@
     
     [_player prepareToPlay];
     [_player play];
-    [self drawCircleWithDuration:[track.trackInformation objectForKey:@"duration"]];
-    
+    [self drawCircleWithDuration:[track.trackInformation objectForKey:@"duration"] fromCompletion:0.0f];
     
     if ([_player isPlaying])
         NSLog(@"LIFTOFF");
 }
 
--(void)drawCircleWithDuration:(NSNumber *)duration
+-(void)drawCircleWithDuration:(NSNumber *)duration fromCompletion:(float)percentage
 {
     int radius = 120;
     CAShapeLayer *circle = [CAShapeLayer layer];
@@ -225,7 +224,7 @@
     [drawAnimation setValue:circle forKey:@"parentLayer"];
     
     // Animate from no part of the stroke being drawn to the entire stroke being drawn
-    drawAnimation.fromValue = [NSNumber numberWithFloat:0.0f];
+    drawAnimation.fromValue = [NSNumber numberWithFloat:percentage];
     drawAnimation.toValue   = [NSNumber numberWithFloat:1.0f];
     
     // Experiment with timing to get the appearence to look the way you want
@@ -243,6 +242,13 @@
     {
         [layer removeFromSuperlayer];
     }
+}
+
+-(void)viewDidAppear:(BOOL)animated
+{
+    float percentageFinished = _player.currentTime/([[_songData objectForKey:@"duration"] doubleValue]/1000.0);
+    
+    [self drawCircleWithDuration:[_songData objectForKey:@"duration"] fromCompletion:percentageFinished];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
