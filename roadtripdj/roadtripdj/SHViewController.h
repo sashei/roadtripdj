@@ -12,18 +12,19 @@
 #import <AVFoundation/AVFoundation.h>
 #import <SoundCloudSearcher.h>
 
-@interface SHViewController : UIViewController <CLLocationManagerDelegate, AVAudioPlayerDelegate>
+@interface SHViewController : UIViewController <CLLocationManagerDelegate, AVAudioPlayerDelegate, UIGestureRecognizerDelegate>
 
 @property CLLocationManager *locationManager;
 @property CLLocation *currentLocation;
 @property CLGeocoder *geocoder;
 @property CLPlacemark *currentPlacemark;
+@property NSString *prevLocality;
+
+@property AVAudioSession *session;
 @property AVAudioPlayer *player;
 @property NSMutableDictionary *cloudPacket; //data going to the soundcloud searcher
 @property SoundCloudSearcher *cloud;
 @property NSMutableDictionary *songData;
-@property AVAudioSession *session;
-@property NSString *prevLocality;
 
 @property UISwipeGestureRecognizer *swipeRecognizer;
 
@@ -31,6 +32,9 @@
 @property UILabel *cityLabel;
 @property UILabel *songLabel;
 @property UILabel *artistLabel;
+
+@property CAShapeLayer *progressCircle;
+@property CABasicAnimation *progressAnimation;
 
 @property UIImageView *soundCloudLogo;
 
