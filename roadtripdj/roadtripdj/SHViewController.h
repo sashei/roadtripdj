@@ -12,7 +12,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <SoundCloudSearcher.h>
 
-@interface SHViewController : UIViewController <CLLocationManagerDelegate, AVAudioPlayerDelegate, UIGestureRecognizerDelegate>
+@interface SHViewController : UIViewController <CLLocationManagerDelegate, AVAudioPlayerDelegate>
 
 @property CLLocationManager *locationManager;
 @property CLLocation *currentLocation;
@@ -41,6 +41,6 @@
 - (void)noMusicForLocality;
 - (void)dataReturned:(Track *)track;
 
-- (void)handleGesture:(UISwipeGestureRecognizer *)sender;
+//- (void)songDataReceived;
 
 @end
