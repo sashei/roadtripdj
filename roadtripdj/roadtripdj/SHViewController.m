@@ -17,8 +17,6 @@
 - (id)init {
     self = [super init];
     if (self) {
-        
-        [self.view setUserInteractionEnabled:YES];
         // Audio session
         _session = [AVAudioSession sharedInstance];
         NSError *trash;
@@ -28,11 +26,6 @@
         {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationReopened) name:UIApplicationWillEnterForegroundNotification object:nil];
         }
-        
-        // gesture recognizer initialization
-        _swipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
-        [_swipeRecognizer setDelegate:self];
-        [self.view addGestureRecognizer:_swipeRecognizer];
         
         // meh
         _prevLocality = @"";
@@ -177,7 +170,7 @@
         if (_player == Nil) {
             [_welcomeLabel setText:@"Welcome to"];
             [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
-            [_artistLabel setText:@"Loading"];
+            [_artistLabel setText:@"Loading..."];
             [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
         }
     }];
@@ -277,12 +270,12 @@
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
     NSLog(@"Player is done!");
     if (_prevLocality != [_cloudPacket objectForKey:@"locality"]) {
-        [_cityLabel setText:[[_cloudPacket objectForKey:@"locality"] uppercaseString]];
+        [_cityLabel setText:[_cloudPacket objectForKey:@"locality"]];
         _prevLocality = [_cloudPacket objectForKey:@"locality"];
     }
     // Request another song from the soundcloud searcher, using the new location
     [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-    [_artistLabel setText:@"Loading"];
+    [_artistLabel setText:@"Loading..."];
     [_songLabel setText:@""];
 }
 
@@ -307,15 +300,6 @@
         if (![[UIApplication sharedApplication] openURL:_soundCloudHome])
             NSLog(@"%@%@",@"Failed to open url:",[_soundCloudHome description]);
     }
-}
-
-- (void)handleSwipeGesture:(UISwipeGestureRecognizer *)sender
-{
-    NSLog(@"swiping!");
-    // Request another song from the soundcloud searcher, using the new location
-    [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-    [_artistLabel setText:@"Loading..."];
-    [_songLabel setText:@""];
 }
 
 @end
