@@ -25,7 +25,7 @@
 @property AVAudioSession *session;
 @property NSString *prevLocality;
 
-@property UIGestureRecognizer *swipeRecognizer;
+@property UISwipeGestureRecognizer *swipeRecognizer;
 
 @property UILabel *welcomeLabel;
 @property UILabel *cityLabel;

@@ -32,6 +32,7 @@
         // gesture recognizer initialization
         _swipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
         [_swipeRecognizer setDelegate:self];
+        _swipeRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
         [self.view addGestureRecognizer:_swipeRecognizer];
         
         // meh
@@ -200,9 +201,10 @@
     _player.delegate = self;
     
     _player.volume = 1.0;
-    NSLog(@"%f", _player.duration);
     
+    NSLog(@"preparing to play");
     [_player prepareToPlay];
+    NSLog(@"playing?");
     [_player play];
     [self drawCircleWithDuration:[track.trackInformation objectForKey:@"duration"] fromCompletion:0.0f];
     
@@ -309,7 +311,7 @@
     }
 }
 
-- (void)handleSwipeGesture:(UISwipeGestureRecognizer *)sender
+- (void)handleGesture:(UISwipeGestureRecognizer *)sender
 {
     NSLog(@"swiping!");
     // Request another song from the soundcloud searcher, using the new location
