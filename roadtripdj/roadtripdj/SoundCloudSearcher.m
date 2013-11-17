@@ -15,15 +15,25 @@
     _track = [Track new];
     _city = city;
     
+    int cacheSizeMemory = 4*1024*1024; // 4MB
+    
+    [[NSURLCache sharedURLCache] setMemoryCapacity:cacheSizeMemory];
+    
     NSString *encodedCity = [city stringByReplacingOccurrencesOfString:@" " withString:@"+"];
     NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/users.json?client_id=b27fd7cbc5bb8d6cb96603dfabe525ac&q=[%@]",encodedCity];
     
     INETJSONData *request = [[INETJSONData alloc] initWithURL:[NSURL URLWithString:resourceURL] andTarget:self andAction:@selector(cityLoaded:)];
+    
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
+    return;
 }
 
 -(void)cityLoaded:(NSMutableArray *)users
 {
     [self scrubUsers:users fromCity:_city];
+    
+    return;
 }
 
 -(void)scrubUsers:(NSArray *)users fromCity:(NSString *)city
@@ -64,31 +74,26 @@
     _track.artistInformation = user;
     
     [self handleArtist:[user objectForKey:@"id"]];
+    
+    return;
 }
 
 -(void)handleArtist:(NSString *)user_id
 {
-//    SCRequestResponseHandler handler;
-//    handler = ^(NSURLResponse *response, NSData *data, NSError *error) {
-//        NSError *jsonError = nil;
-//        NSJSONSerialization *jsonResponse = [NSJSONSerialization
-//                                             JSONObjectWithData:data
-//                                             options:0
-//                                             error:&jsonError];
-//        if (!jsonError && [jsonResponse isKindOfClass:[NSArray class]]) {
-//            NSArray *tracks = (NSArray *)jsonResponse;
-//            [self selectTrack:tracks];
-//        }
-//    };
-
     NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/users/%@/tracks.json?client_id=b27fd7cbc5bb8d6cb96603dfabe525ac",user_id];
     
     INETJSONData *request = [[INETJSONData alloc] initWithURL:[NSURL URLWithString:resourceURL] andTarget:self andAction:@selector(artistLoaded:)];
+    
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
+    return;
 }
 
 -(void)artistLoaded:(NSMutableArray *)tracks
 {
     [self selectTrack:tracks];
+    
+    return;
 }
 
 -(void)selectTrack:(NSMutableArray *)tracks
@@ -110,22 +115,34 @@
                 responseHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
                  [self setTrackData:data];
              }];
+    
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
+    return;
 }
 
 -(void)setTrackData:(NSData *)data
 {
     _track.data = data;
     [self doneSearching];
+    
+    return;
 }
 
 -(void)doneSearching
 {
     [_target performSelector:_action withObject:_track];
+    
+    [self clearFields];
+    
+    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
+    return;
 }
 
--(void)cleanUp
+-(void)clearFields
 {
-    
+    _track = nil;
 }
 
 @end

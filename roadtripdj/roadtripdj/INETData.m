@@ -43,7 +43,6 @@
 {
     _data = data;
     
-    
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection

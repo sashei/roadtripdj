@@ -140,7 +140,7 @@
         self.cloudPacket = [[NSMutableDictionary alloc] initWithCapacity:0];
         
         // Set up the soundcloud searcher
-        self.cloud = [SoundCloudSearcher new];
+        _cloud = [SoundCloudSearcher new];
         _cloud.target = self;
         _cloud.action = @selector(dataReturned:);
     }
@@ -190,6 +190,8 @@
             [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
         }
     }];
+    
+    return;
 }
 
 
@@ -198,6 +200,7 @@
  * Starts playing the song, and updates fields
  */
 - (void)dataReturned:(Track *)track {
+    
     [_songLabel setText:[track.trackInformation objectForKey:@"title"]];
     [_artistLabel setText:[track.artistInformation objectForKey:@"full_name"]];
     _artistPage = [NSURL URLWithString:[track.artistInformation objectForKey:@"permalink_url"]];
@@ -214,6 +217,8 @@
     
     if ([_player isPlaying])
         NSLog(@"LIFTOFF");
+    
+    return;
 }
 
 - (void)drawCircleWithDuration:(NSNumber *)duration fromCompletion:(float)percentage
@@ -252,6 +257,8 @@
     
     // Add the animation to the circle
     [_progressCircle addAnimation:_progressAnimation forKey:@"drawCircleAnimation"];
+    
+    return;
 }
 
 - (void)animationDidStop:(CAAnimation *)theAnimation finished:(BOOL)flag
@@ -261,6 +268,8 @@
     {
         [layer removeFromSuperlayer];
     }
+    
+    return;
 }
 
 - (void)killProgressAnimation
@@ -298,13 +307,15 @@
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
     
     if (_prevLocality != [_cloudPacket objectForKey:@"locality"]) {
-        [_cityLabel setText:[_cloudPacket objectForKey:@"locality"]];
+        [_cityLabel setText:[[_cloudPacket objectForKey:@"locality"] uppercaseString]];
         _prevLocality = [_cloudPacket objectForKey:@"locality"];
     }
     // Request another song from the soundcloud searcher, using the new location
     [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
     [_artistLabel setText:@"Loading"];
     [_songLabel setText:@""];
+    
+    return;
 }
 
 - (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
@@ -331,6 +342,8 @@
         if (![[UIApplication sharedApplication] openURL:_soundCloudHome])
             NSLog(@"%@%@",@"Failed to open url:",[_soundCloudHome description]);
     }
+    
+    return;
 }
 
 /*
@@ -352,6 +365,8 @@
         float percentageFinished = _player.currentTime/_player.duration;
         [self drawCircleWithDuration:[NSNumber numberWithFloat:3000.0] fromCompletion:percentageFinished];
     }
+    
+    return;
 }
 
 @end
