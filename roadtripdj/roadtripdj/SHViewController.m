@@ -17,26 +17,22 @@
 - (id)init {
     self = [super init];
     if (self) {
-        // Audio session
+        
+        // Create a new audio session
         _session = [AVAudioSession sharedInstance];
         NSError *trash;
         [_session setCategory:@"AVAudioSessionCategoryPlayback" error:&trash];
         
+        // Create a listener for when this application enters the foreground
         if(&UIApplicationWillEnterForegroundNotification != nil)
         {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationReopened) name:UIApplicationWillEnterForegroundNotification object:nil];
         }
         
-        // gesture recognizer initialization
-        _swipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
-        [_swipeRecognizer setDelegate:self];
-        _swipeRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
-        [self.view addGestureRecognizer:_swipeRecognizer];
-        
         // meh
         _prevLocality = @"";
         
-        // view stuff
+        //****************************************** VIEW AND UI INITIALIZATION
         // UIColors
         UIColor *peaColor = [UIColor colorWithRed:(88.0/255.0) green:(165.0/255.0) blue:(123.0/255.0) alpha:1.0];
         
@@ -120,10 +116,23 @@
         
         _soundCloudHome = [NSURL URLWithString:@"http://www.soundcloud.com"];
         
+        // gesture recognizer initialization
+        _swipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
+        [_swipeRecognizer setDelegate:self];
+        _swipeRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
+        [self.view addGestureRecognizer:_swipeRecognizer];
+        
+        // Draw the loading circle!
+        [_songLabel setText:@"Swipe right for the next song"];
+        [self drawCircleWithDuration:[NSNumber numberWithFloat:5000.0f] fromCompletion:0.0f];
+        //****************************************** END VIEW AND UI INITIALIZATION
+        
+        
         // Set up the location manager
         self.locationManager = [[CLLocationManager alloc] init];
         self.locationManager.delegate = self;
         [self.locationManager startMonitoringSignificantLocationChanges];
+        _prevLocality = @"";
         
         // Set up the geocoder
         self.geocoder = [[CLGeocoder alloc] init];
@@ -141,6 +150,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -176,7 +186,7 @@
         if (_player == Nil) {
             [_welcomeLabel setText:@"Welcome to"];
             [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
-            [_artistLabel setText:@"Loading..."];
+            [_artistLabel setText:@"Loading"];
             [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
         }
     }];
@@ -188,8 +198,6 @@
  * Starts playing the song, and updates fields
  */
 - (void)dataReturned:(Track *)track {
-    
-    
     [_songLabel setText:[track.trackInformation objectForKey:@"title"]];
     [_artistLabel setText:[track.artistInformation objectForKey:@"full_name"]];
     _artistPage = [NSURL URLWithString:[track.artistInformation objectForKey:@"permalink_url"]];
@@ -200,9 +208,7 @@
     
     _player.volume = 1.0;
     
-    NSLog(@"preparing to play");
     [_player prepareToPlay];
-    NSLog(@"playing?");
     [_player play];
     [self drawCircleWithDuration:[track.trackInformation objectForKey:@"duration"] fromCompletion:0.0f];
     
@@ -210,40 +216,42 @@
         NSLog(@"LIFTOFF");
 }
 
--(void)drawCircleWithDuration:(NSNumber *)duration fromCompletion:(float)percentage
+- (void)drawCircleWithDuration:(NSNumber *)duration fromCompletion:(float)percentage
 {
-    int radius = 120;
-    CAShapeLayer *circle = [CAShapeLayer layer];
+    [self killProgressAnimation];
     
-    circle.path = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, 2.0*radius, 2.0*radius)
+    int radius = 120;
+    _progressCircle = [CAShapeLayer layer];
+    
+    _progressCircle.path = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, 2.0*radius, 2.0*radius)
                                              cornerRadius:radius].CGPath;
     // Center the shape in self.view
-    circle.position = CGPointMake(CGRectGetMidX(self.view.frame)-radius,
+    _progressCircle.position = CGPointMake(CGRectGetMidX(self.view.frame)-radius,
                                   CGRectGetMidY(self.view.frame)-radius);
     
-    circle.fillColor = [UIColor clearColor].CGColor;
-    circle.strokeColor = [UIColor whiteColor].CGColor;
-    circle.lineWidth = 4;
+    _progressCircle.fillColor = [UIColor clearColor].CGColor;
+    _progressCircle.strokeColor = [UIColor whiteColor].CGColor;
+    _progressCircle.lineWidth = 4;
     
-    [self.view.layer addSublayer:circle];
+    [self.view.layer addSublayer:_progressCircle];
     
     // Configure animation
-    CABasicAnimation *drawAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
-    drawAnimation.duration            = [duration doubleValue]/1000.0;
-    drawAnimation.repeatCount         = 1.0;
-    drawAnimation.removedOnCompletion = YES;
-    drawAnimation.delegate = self;
-    [drawAnimation setValue:circle forKey:@"parentLayer"];
+    _progressAnimation = [CABasicAnimation animationWithKeyPath:@"strokeEnd"];
+    _progressAnimation.duration            = [duration doubleValue]/1000.0;
+    _progressAnimation.repeatCount         = 1.0;
+    _progressAnimation.removedOnCompletion = YES;
+    _progressAnimation.delegate = self;
+    [_progressAnimation setValue:_progressCircle forKey:@"parentLayer"];
     
     // Animate from no part of the stroke being drawn to the entire stroke being drawn
-    drawAnimation.fromValue = [NSNumber numberWithFloat:percentage];
-    drawAnimation.toValue   = [NSNumber numberWithFloat:1.0f];
+    _progressAnimation.fromValue = [NSNumber numberWithFloat:percentage];
+    _progressAnimation.toValue   = [NSNumber numberWithFloat:1.0f];
     
     // Experiment with timing to get the appearence to look the way you want
-    drawAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
+    _progressAnimation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionLinear];
     
     // Add the animation to the circle
-    [circle addAnimation:drawAnimation forKey:@"drawCircleAnimation"];
+    [_progressCircle addAnimation:_progressAnimation forKey:@"drawCircleAnimation"];
 }
 
 - (void)animationDidStop:(CAAnimation *)theAnimation finished:(BOOL)flag
@@ -255,17 +263,28 @@
     }
 }
 
--(void)applicationReopened
+- (void)killProgressAnimation
+{
+    CALayer *layer = [_progressAnimation valueForKey:@"parentLayer"];
+    if( layer )
+    {
+        [layer removeFromSuperlayer];
+    }
+}
+
+/*
+ * Handles reappearance of UI when the application reenters the foreground. 
+ */
+-(void) applicationReopened
 {
     NSLog(@"entered dat foreground!");
     
-    float percentageFinished = _player.currentTime/_player.duration;
-    
-    float dDuration = (_player.duration - _player.currentTime)*1000;
-    
-    NSNumber *duration = [NSNumber numberWithFloat:dDuration];
-    
-    [self drawCircleWithDuration:duration fromCompletion:percentageFinished];
+    if (_player.playing) {
+        float percentageFinished = _player.currentTime/_player.duration;
+        float dDuration = (_player.duration - _player.currentTime)*1000;
+        NSNumber *duration = [NSNumber numberWithFloat:dDuration];
+        [self drawCircleWithDuration:duration fromCompletion:percentageFinished];
+    }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
@@ -273,9 +292,10 @@
 }
 
 #pragma mark AV Audio Player interactions
-
+/*
+ * Called when the song is done, loads the next song.
+ */
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
-    //_player = [AVAudioPlayer new];
     
     if (_prevLocality != [_cloudPacket objectForKey:@"locality"]) {
         [_cityLabel setText:[_cloudPacket objectForKey:@"locality"]];
@@ -283,7 +303,7 @@
     }
     // Request another song from the soundcloud searcher, using the new location
     [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-    [_artistLabel setText:@"Loading..."];
+    [_artistLabel setText:@"Loading"];
     [_songLabel setText:@""];
 }
 
@@ -296,6 +316,9 @@
     NSLog(@"We couldn't find any music for this place!");
 }
 
+/*
+ * Create touch surface for links.
+ */
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
     UITouch *touch = [touches anyObject];
@@ -310,14 +333,25 @@
     }
 }
 
-
+/*
+ * Get the next song for the user!
+ */
 - (void)handleGesture:(UISwipeGestureRecognizer *)sender
 {
-    NSLog(@"swiping!");
-    // Request another song from the soundcloud searcher, using the new location
-    [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-    [_artistLabel setText:@"Loading..."];
-    [_songLabel setText:@""];
+    if ([_player isPlaying]) {
+        // Call the cloud
+        [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+        
+        // Update the UI to the loading state
+        [_player stop];
+        [self killProgressAnimation];
+        
+        [_artistLabel setText:@"Loading"];
+        [_songLabel setText:@""];
+        
+        float percentageFinished = _player.currentTime/_player.duration;
+        [self drawCircleWithDuration:[NSNumber numberWithFloat:3000.0] fromCompletion:percentageFinished];
+    }
 }
 
 @end
