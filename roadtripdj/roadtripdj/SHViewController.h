@@ -41,6 +41,6 @@
 - (void)noMusicForLocality;
 - (void)dataReturned:(Track *)track;
 
-- (void)handleGesture:(UISwipeGestureRecognizer *)sender;
+- (void)handleSwipeGesture:(UISwipeGestureRecognizer *)sender;
 
 @end

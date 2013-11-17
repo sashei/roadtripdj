@@ -700,7 +700,10 @@
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "roadtripdj/roadtripdj-Prefix.pch";
-				"HEADER_SEARCH_PATHS[arch=*]" = "$(SRCROOT)/../**";
+				"HEADER_SEARCH_PATHS[arch=*]" = (
+					"$PROJECT_DIR/**",
+					"$(SRCROOT)/../**",
+				);
 				INFOPLIST_FILE = "roadtripdj/roadtripdj-Info.plist";
 				"OTHER_LDFLAGS[arch=*]" = (
 					"-all_load",
