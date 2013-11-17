@@ -35,6 +35,8 @@
 		7DB4338018372EC300A971DF /* libSoundCloudAPI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DB4334F18372E9200A971DF /* libSoundCloudAPI.a */; };
 		7DB4338118372EC300A971DF /* libSoundCloudUI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7DB4335618372E9700A971DF /* libSoundCloudUI.a */; };
 		7DB433891837399800A971DF /* SoundCloudSearcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DB433881837399800A971DF /* SoundCloudSearcher.m */; };
+		7DE0B534183955B000A9545E /* INETJSONData.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DE0B533183955B000A9545E /* INETJSONData.m */; };
+		7DE0B537183957DA00A9545E /* INETData.m in Sources */ = {isa = PBXBuildFile; fileRef = 7DE0B536183957DA00A9545E /* INETData.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -181,6 +183,10 @@
 		7DB4336B18372EA500A971DF /* OHAttributedLabel.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OHAttributedLabel.xcodeproj; path = ../OHAttributedLabel/OHAttributedLabel.xcodeproj; sourceTree = "<group>"; };
 		7DB433871837399800A971DF /* SoundCloudSearcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundCloudSearcher.h; sourceTree = "<group>"; };
 		7DB433881837399800A971DF /* SoundCloudSearcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundCloudSearcher.m; sourceTree = "<group>"; };
+		7DE0B532183955B000A9545E /* INETJSONData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = INETJSONData.h; sourceTree = "<group>"; };
+		7DE0B533183955B000A9545E /* INETJSONData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = INETJSONData.m; sourceTree = "<group>"; };
+		7DE0B535183957DA00A9545E /* INETData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = INETData.h; sourceTree = "<group>"; };
+		7DE0B536183957DA00A9545E /* INETData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = INETData.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -270,6 +276,10 @@
 				7DB433881837399800A971DF /* SoundCloudSearcher.m */,
 				7D8067B318373A820009F395 /* Track.h */,
 				7D8067B418373A820009F395 /* Track.m */,
+				7DE0B532183955B000A9545E /* INETJSONData.h */,
+				7DE0B533183955B000A9545E /* INETJSONData.m */,
+				7DE0B535183957DA00A9545E /* INETData.h */,
+				7DE0B536183957DA00A9545E /* INETData.m */,
 				7D7C1B7E183722CB00CDD084 /* Images.xcassets */,
 				7D7C1B6D183722CB00CDD084 /* Supporting Files */,
 			);
@@ -553,7 +563,9 @@
 				7DB433891837399800A971DF /* SoundCloudSearcher.m in Sources */,
 				7D7C1B73183722CB00CDD084 /* main.m in Sources */,
 				7D7C1B7D183722CB00CDD084 /* SHViewController.m in Sources */,
+				7DE0B534183955B000A9545E /* INETJSONData.m in Sources */,
 				7D8067B518373A820009F395 /* Track.m in Sources */,
+				7DE0B537183957DA00A9545E /* INETData.m in Sources */,
 				7D7C1B77183722CB00CDD084 /* SHAppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

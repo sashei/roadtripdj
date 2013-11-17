@@ -118,7 +118,7 @@
         
         [self.view addSubview:_soundCloudLogo];
         
-        _soundCloudHome = [[NSURL alloc] initWithString:@"http://www.soundcloud.com"];
+        _soundCloudHome = [NSURL URLWithString:@"http://www.soundcloud.com"];
         
         // Set up the location manager
         self.locationManager = [[CLLocationManager alloc] init];
@@ -128,7 +128,7 @@
         // Set up the geocoder
         self.geocoder = [[CLGeocoder alloc] init];
         // Create the cloud packet
-        self.cloudPacket = [NSMutableDictionary new];
+        self.cloudPacket = [[NSMutableDictionary alloc] initWithCapacity:0];
         
         // Set up the soundcloud searcher
         self.cloud = [SoundCloudSearcher new];
@@ -192,7 +192,7 @@
     
     [_songLabel setText:[track.trackInformation objectForKey:@"title"]];
     [_artistLabel setText:[track.artistInformation objectForKey:@"full_name"]];
-    _artistPage = [[NSURL alloc] initWithString:[track.artistInformation objectForKey:@"permalink_url"]];
+    _artistPage = [NSURL URLWithString:[track.artistInformation objectForKey:@"permalink_url"]];
     
     NSError *playerError;
     _player = [[AVAudioPlayer alloc] initWithData:track.data error:&playerError];
@@ -275,7 +275,8 @@
 #pragma mark AV Audio Player interactions
 
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
-    NSLog(@"Player is done!");
+    //_player = [AVAudioPlayer new];
+    
     if (_prevLocality != [_cloudPacket objectForKey:@"locality"]) {
         [_cityLabel setText:[_cloudPacket objectForKey:@"locality"]];
         _prevLocality = [_cloudPacket objectForKey:@"locality"];

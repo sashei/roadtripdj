@@ -12,7 +12,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <SoundCloudSearcher.h>
 
-@interface SHViewController : UIViewController <CLLocationManagerDelegate, AVAudioPlayerDelegate>
+@interface SHViewController : UIViewController <CLLocationManagerDelegate, AVAudioPlayerDelegate, UIGestureRecognizerDelegate>
 
 @property CLLocationManager *locationManager;
 @property CLLocation *currentLocation;

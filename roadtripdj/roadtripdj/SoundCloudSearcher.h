@@ -14,9 +14,12 @@
 #import "SCAccount.h"
 #import "SCRequest.h"
 #import <stdlib.h>
+#import "INETJSONData.h"
+#import "INETData.h"
 
 @interface SoundCloudSearcher : NSObject
 
+@property NSString *city;
 @property Track *track;
 
 @property id target;

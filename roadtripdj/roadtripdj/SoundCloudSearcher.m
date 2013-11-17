@@ -13,34 +13,23 @@
 -(void)handleCity:(NSString *)city
 {
     _track = [Track new];
-    
-    SCRequestResponseHandler handler;
-    handler = ^(NSURLResponse *response, NSData *data, NSError *error) {
-        NSError *jsonError = nil;
-        NSJSONSerialization *jsonResponse = [NSJSONSerialization
-                                             JSONObjectWithData:data
-                                             options:0
-                                             error:&jsonError];
-        if (!jsonError && [jsonResponse isKindOfClass:[NSArray class]]) {
-            NSArray *users = (NSArray *)jsonResponse;
-            [self scrubUsers:users fromCity:city];
-        }
-    };
+    _city = city;
     
     NSString *encodedCity = [city stringByReplacingOccurrencesOfString:@" " withString:@"+"];
     NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/users.json?client_id=b27fd7cbc5bb8d6cb96603dfabe525ac&q=[%@]",encodedCity];
-    [SCRequest performMethod:SCRequestMethodGET
-                  onResource:[NSURL URLWithString:resourceURL]
-             usingParameters:nil
-                 withAccount:nil
-      sendingProgressHandler:nil
-             responseHandler:handler];
+    
+    INETJSONData *request = [[INETJSONData alloc] initWithURL:[NSURL URLWithString:resourceURL] andTarget:self andAction:@selector(cityLoaded:)];
+}
+
+-(void)cityLoaded:(NSMutableArray *)users
+{
+    [self scrubUsers:users fromCity:_city];
 }
 
 -(void)scrubUsers:(NSArray *)users fromCity:(NSString *)city
 {
-    NSMutableArray *scrubbedUsers = [NSMutableArray new];
-    NSMutableArray *scrubbedCityUsers = [NSMutableArray new];
+    NSMutableArray *scrubbedUsers = [[NSMutableArray alloc] initWithCapacity:0];
+    NSMutableArray *scrubbedCityUsers = [[NSMutableArray alloc]initWithCapacity:0];
     int foundUsers = [users count];
     
     // loop through all users found by the json query and filter them by users that are actually from
@@ -79,29 +68,30 @@
 
 -(void)handleArtist:(NSString *)user_id
 {
-    SCRequestResponseHandler handler;
-    handler = ^(NSURLResponse *response, NSData *data, NSError *error) {
-        NSError *jsonError = nil;
-        NSJSONSerialization *jsonResponse = [NSJSONSerialization
-                                             JSONObjectWithData:data
-                                             options:0
-                                             error:&jsonError];
-        if (!jsonError && [jsonResponse isKindOfClass:[NSArray class]]) {
-            NSArray *tracks = (NSArray *)jsonResponse;
-            [self selectTrack:tracks];
-        }
-    };
+//    SCRequestResponseHandler handler;
+//    handler = ^(NSURLResponse *response, NSData *data, NSError *error) {
+//        NSError *jsonError = nil;
+//        NSJSONSerialization *jsonResponse = [NSJSONSerialization
+//                                             JSONObjectWithData:data
+//                                             options:0
+//                                             error:&jsonError];
+//        if (!jsonError && [jsonResponse isKindOfClass:[NSArray class]]) {
+//            NSArray *tracks = (NSArray *)jsonResponse;
+//            [self selectTrack:tracks];
+//        }
+//    };
 
     NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/users/%@/tracks.json?client_id=b27fd7cbc5bb8d6cb96603dfabe525ac",user_id];
-    [SCRequest performMethod:SCRequestMethodGET
-                  onResource:[NSURL URLWithString:resourceURL]
-             usingParameters:nil
-                 withAccount:nil
-      sendingProgressHandler:nil
-             responseHandler:handler];
+    
+    INETJSONData *request = [[INETJSONData alloc] initWithURL:[NSURL URLWithString:resourceURL] andTarget:self andAction:@selector(artistLoaded:)];
 }
 
--(void)selectTrack:(NSArray *)tracks
+-(void)artistLoaded:(NSMutableArray *)tracks
+{
+    [self selectTrack:tracks];
+}
+
+-(void)selectTrack:(NSMutableArray *)tracks
 {
     int randTrack = arc4random() % [tracks count];
     
@@ -109,6 +99,9 @@
     _track.trackInformation = track;
     
     NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/tracks/%@/stream?client_id=b27fd7cbc5bb8d6cb96603dfabe525ac",[track objectForKey:@"id"]];
+    
+//    INETData *request = [[INETData alloc] initWithURL:[NSURL URLWithString:resourceURL] andTarget:self andAction:@selector(setTrackData:)];
+    
     [SCRequest performMethod:SCRequestMethodGET
                 onResource:[NSURL URLWithString:resourceURL]
                 usingParameters:nil
@@ -128,6 +121,11 @@
 -(void)doneSearching
 {
     [_target performSelector:_action withObject:_track];
+}
+
+-(void)cleanUp
+{
+    
 }
 
 @end
