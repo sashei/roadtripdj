@@ -177,7 +177,7 @@
         if (_player == Nil) {
             [_welcomeLabel setText:@"Welcome to"];
             [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
-            [_artistLabel setText:@"Loading..."];
+            [_artistLabel setText:@"Loading"];
             [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
         }
     }];
@@ -277,12 +277,12 @@
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
     NSLog(@"Player is done!");
     if (_prevLocality != [_cloudPacket objectForKey:@"locality"]) {
-        [_cityLabel setText:[_cloudPacket objectForKey:@"locality"]];
+        [_cityLabel setText:[[_cloudPacket objectForKey:@"locality"] uppercaseString]];
         _prevLocality = [_cloudPacket objectForKey:@"locality"];
     }
     // Request another song from the soundcloud searcher, using the new location
     [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-    [_artistLabel setText:@"Loading..."];
+    [_artistLabel setText:@"Loading"];
     [_songLabel setText:@""];
 }
 
