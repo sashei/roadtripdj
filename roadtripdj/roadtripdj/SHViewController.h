@@ -11,6 +11,7 @@
 #import "SoundCloudSearcher.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SoundCloudSearcher.h>
+#import <Reachability.h>
 
 @interface SHViewController : UIViewController <CLLocationManagerDelegate, AVAudioPlayerDelegate, UIGestureRecognizerDelegate>
 
@@ -19,6 +20,8 @@
 @property CLGeocoder *geocoder;
 @property CLPlacemark *currentPlacemark;
 @property NSString *prevLocality;
+
+@property Reachability *reachability;
 
 @property AVAudioSession *session;
 @property AVAudioPlayer *player;
@@ -44,6 +47,7 @@
 // Called by the SoundCloudSearcher when no music is available for the last locality
 - (void)noMusicForLocality;
 - (void)dataReturned:(Track *)track;
+- (void)reachabilityDidChange:(NSNotification *)notification;
 
 //- (void)songDataReceived;
 

@@ -23,6 +23,14 @@
         NSError *trash;
         [_session setCategory:@"AVAudioSessionCategoryPlayback" error:&trash];
         
+        
+//        // Initialize Reachability
+//        _reachability = [Reachability reachabilityWithHostname:@"https://api.soundcloud.com/"];
+//        // Start Monitoring
+//        [_reachability startNotifier];
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityDidChange:) name:kReachabilityChangedNotification object:nil];
+        
         // Create a listener for when this application enters the foreground
         if(&UIApplicationWillEnterForegroundNotification != nil)
         {
@@ -127,8 +135,9 @@
         [self.view addGestureRecognizer:_swipeRecognizer];
         
         // Draw the loading circle!
-        [_songLabel setText:@"Swipe right for the next song"];
+        [_songLabel setText:@"Swipe right to skip songs"];
         [self drawCircleWithDuration:[NSNumber numberWithFloat:5000.0f] fromCompletion:0.0f];
+        
         //****************************************** END VIEW AND UI INITIALIZATION
         
         
@@ -147,6 +156,15 @@
         _cloud = [SoundCloudSearcher new];
         _cloud.target = self;
         _cloud.action = @selector(dataReturned:);
+        
+//        if (![_reachability isReachable]) {
+//            [_cityLabel setText:@"OFFLINE"];
+//        }
+//        else {
+//            // Draw the loading circle!
+//            [_songLabel setText:@"Swipe right to skip songs"];
+//            [self drawCircleWithDuration:[NSNumber numberWithFloat:5000.0f] fromCompletion:0.0f];
+//        }
     }
     return self;
 }
@@ -331,6 +349,22 @@
     NSLog(@"We couldn't find any music for this place!");
 }
 
+//- (void)reachabilityDidChange:(NSNotification *)notification {
+//    NSLog(@"Reachability hchange!");
+//    Reachability *reachability = (Reachability *)[notification object];
+//    if ([reachability isReachable]) {
+//        [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+//        [_artistLabel setText:@"Loading"];
+//        [_songLabel setText:@""];
+//        [self drawCircleWithDuration:[NSNumber numberWithFloat:3000.0f] fromCompletion:0.0f];
+//    } else {
+//        [_cityLabel setText:@"OFFLINE"];
+//        [_artistLabel setText:@""];
+//        [_songLabel setText:@""];
+//        [_welcomeLabel setText:@""];
+//    }
+//}
+
 /*
  * Create touch surface for links.
  */
@@ -372,5 +406,7 @@
     
     return;
 }
+
+
 
 @end

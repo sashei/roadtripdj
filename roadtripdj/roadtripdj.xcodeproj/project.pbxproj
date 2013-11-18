@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6755BE061839B8BC002DC30D /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 6755BE051839B8BC002DC30D /* Reachability.m */; };
+		6755BE0C1839B916002DC30D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6755BE0B1839B916002DC30D /* SystemConfiguration.framework */; };
 		7D6839431837B965006D2606 /* sc_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D6839411837B965006D2606 /* sc_logo.png */; };
 		7D6839441837B965006D2606 /* sc_logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D6839421837B965006D2606 /* sc_logo@2x.png */; };
 		7D7C1B67183722CB00CDD084 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D7C1B66183722CB00CDD084 /* Foundation.framework */; };
@@ -146,6 +148,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6755BE041839B8BC002DC30D /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		6755BE051839B8BC002DC30D /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		6755BE0B1839B916002DC30D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		7D6839411837B965006D2606 /* sc_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sc_logo.png; sourceTree = "<group>"; };
 		7D6839421837B965006D2606 /* sc_logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sc_logo@2x.png"; sourceTree = "<group>"; };
 		7D7C1B63183722CB00CDD084 /* roadtripdj.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = roadtripdj.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -188,6 +193,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6755BE0C1839B916002DC30D /* SystemConfiguration.framework in Frameworks */,
 				7DB4337D18372EC300A971DF /* libJSONKit.a in Frameworks */,
 				7DB4337E18372EC300A971DF /* libOAuth2Client.a in Frameworks */,
 				7DB4337F18372EC300A971DF /* libOHAttributedLabel.a in Frameworks */,
@@ -245,6 +251,7 @@
 		7D7C1B65183722CB00CDD084 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				6755BE0B1839B916002DC30D /* SystemConfiguration.framework */,
 				7D7C1C58183727D300CDD084 /* Security.framework */,
 				7D7C1C56183727CA00CDD084 /* QuartzCore.framework */,
 				7D7C1C54183727C300CDD084 /* CoreText.framework */,
@@ -262,6 +269,8 @@
 		7D7C1B6C183722CB00CDD084 /* roadtripdj */ = {
 			isa = PBXGroup;
 			children = (
+				6755BE041839B8BC002DC30D /* Reachability.h */,
+				6755BE051839B8BC002DC30D /* Reachability.m */,
 				7D7C1B75183722CB00CDD084 /* SHAppDelegate.h */,
 				7D7C1B76183722CB00CDD084 /* SHAppDelegate.m */,
 				7D7C1B7B183722CB00CDD084 /* SHViewController.h */,
@@ -552,6 +561,7 @@
 			files = (
 				7DB433891837399800A971DF /* SoundCloudSearcher.m in Sources */,
 				7D7C1B73183722CB00CDD084 /* main.m in Sources */,
+				6755BE061839B8BC002DC30D /* Reachability.m in Sources */,
 				7D7C1B7D183722CB00CDD084 /* SHViewController.m in Sources */,
 				7D8067B518373A820009F395 /* Track.m in Sources */,
 				7D7C1B77183722CB00CDD084 /* SHAppDelegate.m in Sources */,
