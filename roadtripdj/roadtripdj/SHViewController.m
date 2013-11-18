@@ -78,6 +78,7 @@
         
         _songLabel = [[UILabel alloc] initWithFrame:songFrame];
         [_songLabel setTextColor:[UIColor whiteColor]];
+        [_songLabel setText:@"Swipe right to skip songs"];
         [_songLabel setTextAlignment:NSTextAlignmentCenter];
         [_songLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:20]];
         [_songLabel setBackgroundColor:[UIColor clearColor]];
@@ -125,9 +126,6 @@
         [_swipeRecognizer setDelegate:self];
         _swipeRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
         [self.view addGestureRecognizer:_swipeRecognizer];
-        
-        [_songLabel setText:@"Swipe right to skip songs"];
-        [self drawCircleWithDuration:[NSNumber numberWithFloat:5000.0f] fromCompletion:0.0f];
         
         //****************************************** END VIEW AND UI INITIALIZATION
         
@@ -186,7 +184,6 @@
  * TODO: Actually send the cloudPacket to the soundcloudsearcher, update the player, etc
  */
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-    NSLog(@"Updating Location");
     // The last object in the NSArray is the most recent location.
     self.currentLocation = [locations lastObject];
     
@@ -205,13 +202,15 @@
         // We put the locality into the cloudPacket
         [self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
         
+        [_welcomeLabel setText:@"Welcome to"];
+        [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
+        
         if (_player == Nil || ![_player isPlaying]) {
-            [_welcomeLabel setText:@"Welcome to"];
-            [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
             [_artistLabel setText:@"Loading"];
             [_songLabel setText:@""];
             [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
             _isGettingSong = true;
+            [self drawLoadingCircle];
         }
     }];
     
@@ -224,7 +223,6 @@
  * Starts playing the song, and updates fields
  */
 - (void)dataReturned:(Track *)track {
-    NSLog(@"Got Data");
     [_songLabel setText:[track.trackInformation objectForKey:@"title"]];
     [_artistLabel setText:[track.artistInformation objectForKey:@"full_name"]];
     _artistPage = [NSURL URLWithString:[track.artistInformation objectForKey:@"permalink_url"]];
@@ -243,6 +241,9 @@
     return;
 }
 
+/*
+ * Draw the circular song progress/loading bar.
+ */
 - (void)drawCircleWithDuration:(NSNumber *)duration fromCompletion:(float)percentage
 {
     [self killProgressAnimation];
@@ -294,6 +295,9 @@
     return;
 }
 
+/*
+ * Kills the song progress/loading circle.
+ */
 - (void)killProgressAnimation
 {
     CALayer *layer = [_progressAnimation valueForKey:@"parentLayer"];
@@ -304,7 +308,15 @@
 }
 
 /*
- * Handles reappearance of UI when the application reenters the foreground. 
+ * Draws the generic 5 second loading progress bar.
+ */
+- (void)drawLoadingCircle
+{
+    [self drawCircleWithDuration:[NSNumber numberWithFloat:5000.0f] fromCompletion:0.0f];
+}
+
+/*
+ * Handles reappearance of UI when the application reenters the foreground.
  */
 -(void) applicationReopened
 {
@@ -356,27 +368,13 @@
     NSLog(@"Decode error from av player");
 }
 
-
 - (void)noMusicForLocality {
     NSLog(@"We couldn't find any music for this place!");
 }
 
-//- (void)reachabilityDidChange:(NSNotification *)notification {
-//    NSLog(@"Reachability hchange!");
-//    Reachability *reachability = (Reachability *)[notification object];
-//    if ([reachability isReachable]) {
-//        [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-//        [_artistLabel setText:@"Loading"];
-//        [_songLabel setText:@""];
-//        [self drawCircleWithDuration:[NSNumber numberWithFloat:3000.0f] fromCompletion:0.0f];
-//    } else {
-//        [_cityLabel setText:@"OFFLINE"];
-//        [_artistLabel setText:@""];
-//        [_songLabel setText:@""];
-//        [_welcomeLabel setText:@""];
-//    }
-//}
-
+/*
+ * Called when app loses network connectivity.
+ */
 - (void) didBecomeUnreachable {
     if (![_player isPlaying]) {
         [_welcomeLabel setText:@""];
@@ -389,13 +387,12 @@
     _reachable = false;
 }
 
+/*
+ * Called when app regains network connectivity.
+ */
 - (void) didBecomeReachable {
     NSLog(@"Reachable.");
     _reachable = true;
-//    [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-//    [_artistLabel setText:@"Loading"];
-//    [_songLabel setText:@""];
-//    [self drawCircleWithDuration:[NSNumber numberWithFloat:5000.0f] fromCompletion:0.0f];
 }
 
 /*
