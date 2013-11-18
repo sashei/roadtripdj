@@ -122,20 +122,27 @@
     
     NSMutableDictionary *track = [tracks objectAtIndex:randTrack];
     
-    _track.trackInformation = track;
-    
-    NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/tracks/%@/stream?client_id=b27fd7cbc5bb8d6cb96603dfabe525ac",[track objectForKey:@"id"]];
-    
-    [SCRequest performMethod:SCRequestMethodGET
-                onResource:[NSURL URLWithString:resourceURL]
-                usingParameters:nil
-                withAccount:nil
-                sendingProgressHandler:nil
-                responseHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                 [self setTrackData:data];
-             }];
-    
-    [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    if ([[track objectForKey:@"duration"] floatValue] > 600000)
+    {
+        NSLog(@"trying again!");
+        [self clearFields];
+        [self handleCity:_city];
+    } else {
+        _track.trackInformation = track;
+        
+        NSString *resourceURL = [NSString stringWithFormat:@"https://api.soundcloud.com/tracks/%@/stream?client_id=b27fd7cbc5bb8d6cb96603dfabe525ac",[track objectForKey:@"id"]];
+        
+        [SCRequest performMethod:SCRequestMethodGET
+                    onResource:[NSURL URLWithString:resourceURL]
+                    usingParameters:nil
+                    withAccount:nil
+                    sendingProgressHandler:nil
+                    responseHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                     [self setTrackData:data];
+                 }];
+        
+        [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    }
     
     return;
 }
