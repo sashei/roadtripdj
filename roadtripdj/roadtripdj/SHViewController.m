@@ -23,14 +23,6 @@
         NSError *trash;
         [_session setCategory:@"AVAudioSessionCategoryPlayback" error:&trash];
         
-        
-//        // Initialize Reachability
-//        _reachability = [Reachability reachabilityWithHostname:@"https://api.soundcloud.com/"];
-//        // Start Monitoring
-//        [_reachability startNotifier];
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityDidChange:) name:kReachabilityChangedNotification object:nil];
-        
         // Create a listener for when this application enters the foreground
         if(&UIApplicationWillEnterForegroundNotification != nil)
         {
@@ -134,7 +126,6 @@
         _swipeRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
         [self.view addGestureRecognizer:_swipeRecognizer];
         
-        // Draw the loading circle!
         [_songLabel setText:@"Swipe right to skip songs"];
         [self drawCircleWithDuration:[NSNumber numberWithFloat:5000.0f] fromCompletion:0.0f];
         
@@ -157,14 +148,21 @@
         _cloud.target = self;
         _cloud.action = @selector(dataReturned:);
         
-//        if (![_reachability isReachable]) {
-//            [_cityLabel setText:@"OFFLINE"];
-//        }
-//        else {
-//            // Draw the loading circle!
-//            [_songLabel setText:@"Swipe right to skip songs"];
-//            [self drawCircleWithDuration:[NSNumber numberWithFloat:5000.0f] fromCompletion:0.0f];
-//        }
+        
+        // Initialize Reachability
+        _reachability = [Reachability reachabilityWithHostname:@"www.google.com"];
+        
+        __unsafe_unretained typeof(self) weakSelf = self;
+        _reachability.reachableBlock = ^(Reachability *reachability) {
+            [weakSelf didBecomeReachable];
+            [weakSelf.locationManager startMonitoringSignificantLocationChanges];
+        };
+        _reachability.unreachableBlock = ^(Reachability *reachability) {
+            [weakSelf didBecomeUnreachable];
+            [weakSelf.locationManager stopMonitoringSignificantLocationChanges];
+        };
+        // Start Monitoring
+        [_reachability startNotifier];
     }
     return self;
 }
@@ -188,8 +186,10 @@
  * TODO: Actually send the cloudPacket to the soundcloudsearcher, update the player, etc
  */
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+    NSLog(@"Updating Location");
     // The last object in the NSArray is the most recent location.
     self.currentLocation = [locations lastObject];
+    
     
     // Test that the horizontal accuracy does not indicate an invalid measurement
     if (self.currentLocation.horizontalAccuracy < 0) {
@@ -205,11 +205,13 @@
         // We put the locality into the cloudPacket
         [self.cloudPacket setValue:[self.currentPlacemark locality] forKey:@"locality"];
         
-        if (_player == Nil) {
+        if (_player == Nil || ![_player isPlaying]) {
             [_welcomeLabel setText:@"Welcome to"];
             [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
             [_artistLabel setText:@"Loading"];
+            [_songLabel setText:@""];
             [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+            _isGettingSong = true;
         }
     }];
     
@@ -222,7 +224,7 @@
  * Starts playing the song, and updates fields
  */
 - (void)dataReturned:(Track *)track {
-    
+    NSLog(@"Got Data");
     [_songLabel setText:[track.trackInformation objectForKey:@"title"]];
     [_artistLabel setText:[track.artistInformation objectForKey:@"full_name"]];
     _artistPage = [NSURL URLWithString:[track.artistInformation objectForKey:@"permalink_url"]];
@@ -236,9 +238,7 @@
     [_player prepareToPlay];
     [_player play];
     [self drawCircleWithDuration:[track.trackInformation objectForKey:@"duration"] fromCompletion:0.0f];
-    
-    if ([_player isPlaying])
-        NSLog(@"LIFTOFF");
+    _isGettingSong = false;
     
     return;
 }
@@ -332,10 +332,22 @@
         [_cityLabel setText:[[_cloudPacket objectForKey:@"locality"] uppercaseString]];
         _prevLocality = [_cloudPacket objectForKey:@"locality"];
     }
-    // Request another song from the soundcloud searcher, using the new location
-    [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-    [_artistLabel setText:@"Loading"];
-    [_songLabel setText:@""];
+    
+    if (_reachable) {
+        // Request another song from the soundcloud searcher, using the new location
+        _isGettingSong = true;
+        [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+        [_artistLabel setText:@"Loading"];
+        [_songLabel setText:@""];
+    }
+    else {
+        [_welcomeLabel setText:@""];
+        [_cityLabel setText:@"OFFLINE"];
+        [_artistLabel setText:@""];
+        [_player stop];
+        [_songLabel setText:@"No connectivity."];
+        [self killProgressAnimation];
+    }
     
     return;
 }
@@ -365,6 +377,27 @@
 //    }
 //}
 
+- (void) didBecomeUnreachable {
+    if (![_player isPlaying]) {
+        [_welcomeLabel setText:@""];
+        [_cityLabel setText:@"OFFLINE"];
+        [_artistLabel setText:@""];
+        [_player stop];
+        [_songLabel setText:@"No connectivity."];
+        [self killProgressAnimation];
+    }
+    _reachable = false;
+}
+
+- (void) didBecomeReachable {
+    NSLog(@"Reachable.");
+    _reachable = true;
+//    [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+//    [_artistLabel setText:@"Loading"];
+//    [_songLabel setText:@""];
+//    [self drawCircleWithDuration:[NSNumber numberWithFloat:5000.0f] fromCompletion:0.0f];
+}
+
 /*
  * Create touch surface for links.
  */
@@ -389,19 +422,34 @@
  */
 - (void)handleGesture:(UISwipeGestureRecognizer *)sender
 {
-    if ([_player isPlaying]) {
-        // Call the cloud
-        [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-        
-        // Update the UI to the loading state
+    if (_reachable) {
+        if (!_isGettingSong) {
+            // Call the cloud
+            
+            NSLog([_cloudPacket objectForKey:@"locality"]);
+            _isGettingSong = true;
+            [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+            NSLog(@"HEllo!");
+            
+            
+            // Update the UI to the loading state
+            [_player stop];
+            [self killProgressAnimation];
+            
+            [_artistLabel setText:@"Loading"];
+            [_songLabel setText:@""];
+            
+            float percentageFinished = _player.currentTime/_player.duration;
+            [self drawCircleWithDuration:[NSNumber numberWithFloat:3000.0] fromCompletion:percentageFinished];
+        }
+    }
+    else {
+        [_welcomeLabel setText:@""];
+        [_cityLabel setText:@"OFFLINE"];
+        [_artistLabel setText:@""];
         [_player stop];
+        [_songLabel setText:@"No connectivity."];
         [self killProgressAnimation];
-        
-        [_artistLabel setText:@"Loading"];
-        [_songLabel setText:@""];
-        
-        float percentageFinished = _player.currentTime/_player.duration;
-        [self drawCircleWithDuration:[NSNumber numberWithFloat:3000.0] fromCompletion:percentageFinished];
     }
     
     return;

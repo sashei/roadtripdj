@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "roadtripdj/SHViewController.m"
-            timestampString = "406438100.951849"
+            timestampString = "406441549.704672"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "74"
-            endingLineNumber = "74"
+            startingLineNumber = "66"
+            endingLineNumber = "66"
             landmarkName = "-init"
             landmarkType = "5">
          </BreakpointContent>
@@ -68,11 +68,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "roadtripdj/SHViewController.m"
-            timestampString = "406438100.951849"
+            timestampString = "406441549.704672"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "119"
-            endingLineNumber = "119"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
             landmarkName = "-init"
             landmarkType = "5">
          </BreakpointContent>

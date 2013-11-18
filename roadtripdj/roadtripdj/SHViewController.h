@@ -22,9 +22,12 @@
 @property NSString *prevLocality;
 
 @property Reachability *reachability;
+@property BOOL reachable;
 
 @property AVAudioSession *session;
 @property AVAudioPlayer *player;
+@property BOOL isGettingSong;
+
 @property NSMutableDictionary *cloudPacket; //data going to the soundcloud searcher
 @property SoundCloudSearcher *cloud;
 @property NSMutableDictionary *songData;
@@ -47,7 +50,8 @@
 // Called by the SoundCloudSearcher when no music is available for the last locality
 - (void)noMusicForLocality;
 - (void)dataReturned:(Track *)track;
-- (void)reachabilityDidChange:(NSNotification *)notification;
+- (void) didBecomeUnreachable;
+- (void) didBecomeReachable;
 
 //- (void)songDataReceived;
 
