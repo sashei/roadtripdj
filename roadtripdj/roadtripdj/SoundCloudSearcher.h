@@ -14,8 +14,6 @@
 #import "SCAccount.h"
 #import "SCRequest.h"
 #import <stdlib.h>
-#import "INETJSONData.h"
-#import "INETData.h"
 
 @interface SoundCloudSearcher : NSObject
 
