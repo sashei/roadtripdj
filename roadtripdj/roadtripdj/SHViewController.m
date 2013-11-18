@@ -49,6 +49,7 @@
         [_welcomeLabel setTextColor:[UIColor whiteColor]];
         [_welcomeLabel setTextAlignment:NSTextAlignmentCenter];
         [_welcomeLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:20]];
+        [_welcomeLabel setBackgroundColor:[UIColor clearColor]];
         
         [self.view addSubview:_welcomeLabel];
         
@@ -64,6 +65,7 @@
         [_cityLabel setTextAlignment:NSTextAlignmentCenter];
         [_cityLabel setText:@"LOADING"];
         [_cityLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:35]];
+        [_cityLabel setBackgroundColor:[UIColor clearColor]];
         
         [self.view addSubview:_cityLabel];
         
@@ -78,6 +80,7 @@
         [_songLabel setTextColor:[UIColor whiteColor]];
         [_songLabel setTextAlignment:NSTextAlignmentCenter];
         [_songLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:20]];
+        [_songLabel setBackgroundColor:[UIColor clearColor]];
         
         [self.view addSubview:_songLabel];
         
@@ -93,7 +96,8 @@
         [_artistLabel setTextAlignment:NSTextAlignmentCenter];
         [_artistLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:25]];
         [_artistLabel setUserInteractionEnabled:YES];
-        [_artistLabel setTag:0];
+        [_artistLabel setBackgroundColor:[UIColor clearColor]];
+        
         
         [self.view addSubview:_artistLabel];
         
