@@ -18,23 +18,6 @@
     self = [super init];
     if (self) {
         
-        // Create a new audio session
-        _session = [AVAudioSession sharedInstance];
-        NSError *trash;
-        [_session setCategory:@"AVAudioSessionCategoryPlayback" error:&trash];
-        
-        // For backgrounding music and using lock screen controls.
-        if(&UIApplicationWillEnterForegroundNotification != nil)
-        {
-            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationReopened) name:UIApplicationWillEnterForegroundNotification object:nil];
-        }
-        
-        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
-        [[AVAudioSession sharedInstance] setActive: YES error: nil];
-        
-        // meh
-        _prevLocality = @"";
-        
         //****************************************** VIEW AND UI INITIALIZATION
         // UIColors
         UIColor *peaColor = [UIColor colorWithRed:(88.0/255.0) green:(165.0/255.0) blue:(123.0/255.0) alpha:1.0];
@@ -81,7 +64,7 @@
         
         _songLabel = [[UILabel alloc] initWithFrame:songFrame];
         [_songLabel setTextColor:[UIColor whiteColor]];
-        [_songLabel setText:@"Swipe right to skip songs"];
+        [_songLabel setText:@"Swipe left to skip songs"];
         [_songLabel setTextAlignment:NSTextAlignmentCenter];
         [_songLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:20]];
         [_songLabel setBackgroundColor:[UIColor clearColor]];
@@ -97,12 +80,11 @@
         
         _artistLabel = [[UILabel alloc] initWithFrame:artFrame];
         [_artistLabel setTextColor:[UIColor whiteColor]];
-        [_artistLabel setText:@"Swipe left to quit"];
+        [_artistLabel setText:@"Swipe right to quit"];
         [_artistLabel setTextAlignment:NSTextAlignmentCenter];
         [_artistLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:25]];
         [_artistLabel setUserInteractionEnabled:YES];
         [_artistLabel setBackgroundColor:[UIColor clearColor]];
-        
         
         [self.view addSubview:_artistLabel];
         
@@ -138,6 +120,18 @@
         
         //****************************************** END VIEW AND UI INITIALIZATION
         
+        // For backgrounding music and using lock screen controls.
+        if(&UIApplicationWillEnterForegroundNotification != nil)
+        {
+            [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationReopened) name:UIApplicationWillEnterForegroundNotification object:nil];
+        }
+        
+        NSError *trash;
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:&trash];
+        NSLog(@"The error is: %@", trash);
+        [[AVAudioSession sharedInstance] setActive: YES error: &trash];
+        [[AVAudioSession sharedInstance] setDelegate:self];
+        NSLog(@"The error is: %@", trash);
         
         // Set up the location manager
         self.locationManager = [[CLLocationManager alloc] init];
@@ -154,7 +148,6 @@
         _cloud = [SoundCloudSearcher new];
         _cloud.target = self;
         _cloud.action = @selector(dataReturned:);
-        
         
         // Initialize Reachability
         _reachability = [Reachability reachabilityWithHostname:@"www.google.com"];
@@ -182,6 +175,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
+    NSLog(@"is this even being called");
     //Once the view has loaded then we can register to begin recieving controls and we can become the first responder
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     [self becomeFirstResponder];
@@ -189,8 +183,50 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     //End recieving events
+    NSLog(@"View disappearing!");
     [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     [self resignFirstResponder];
+}
+
+/*
+ * Handles reappearance of UI when the application reenters the foreground.
+ */
+-(void) applicationReopened
+{
+    NSLog(@"entered dat foreground!");
+    
+    if (_player.playing) {
+        float percentageFinished = _player.currentTime/_player.duration;
+        float dDuration = (_player.duration - _player.currentTime)*1000;
+        NSNumber *duration = [NSNumber numberWithFloat:dDuration];
+        [self drawCircleWithDuration:duration fromCompletion:percentageFinished];
+    }
+}
+
+/*
+ * Called when app regains network connectivity.
+ */
+- (void) didBecomeReachable {
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    [self becomeFirstResponder];
+    _reachable = true;
+}
+
+/*
+ * Called when app loses network connectivity.
+ */
+- (void) didBecomeUnreachable {
+    if (![_player isPlaying]) {
+        [_welcomeLabel setText:@""];
+        [_cityLabel setText:@"OFFLINE"];
+        [_artistLabel setText:@""];
+        [_player stop];
+        [_songLabel setText:@"No connectivity."];
+        [self killProgressAnimation];
+        [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+        [self resignFirstResponder];
+    }
+    _reachable = false;
 }
 
 - (void)didReceiveMemoryWarning
@@ -228,34 +264,37 @@
         [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
         
         if (_player == Nil ) {
-            [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
             _isGettingSong = true;
+            [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
             [self drawLoadingCircle];
         }
         else if (![_player isPlaying]) {
-            [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-            _isGettingSong = true;
             [self drawLoadingCircle];
-            [_songLabel setText:@""];
-            [_artistLabel setText:@"Loading"];
+            [self playNextSong];
         }
     }];
     
     return;
 }
 
+- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
+    NSLog(@"Getting location failed!");
+}
 
+#pragma mark Sound Cloud Searcher selector function
 /*
  * Called by the soundcloud searcher after a new song has been found.
  * Starts playing the song, and updates fields
  */
 - (void)dataReturned:(Track *)track {
+    NSLog(@"Data returning");
     [_songLabel setText:[track.trackInformation objectForKey:@"title"]];
     [_artistLabel setText:[track.artistInformation objectForKey:@"full_name"]];
     _artistPage = [NSURL URLWithString:[track.artistInformation objectForKey:@"permalink_url"]];
     
     NSError *playerError;
     _player = [[AVAudioPlayer alloc] initWithData:track.data error:&playerError];
+    NSLog(@"The player initializes with error: %@", playerError);
     _player.delegate = self;
     
     _player.volume = 1.0;
@@ -264,6 +303,126 @@
     [_player play];
     [self drawCircleWithDuration:[track.trackInformation objectForKey:@"duration"] fromCompletion:0.0f];
     _isGettingSong = false;
+    
+    return;
+}
+
+#pragma mark AV Audio Player interactions
+/*
+ * Called when the song is done, loads the next song.
+ */
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    NSLog(@"Player is finished playing.");
+    
+    if (_prevLocality != [_cloudPacket objectForKey:@"locality"]) {
+        [_cityLabel setText:[[_cloudPacket objectForKey:@"locality"] uppercaseString]];
+        _prevLocality = [_cloudPacket objectForKey:@"locality"];
+    }
+    
+    if (_reachable) {
+        // Request another song from the soundcloud searcher, using the new location
+        [self playNextSong];
+        
+    }
+    else {
+        [self goOffline];
+    }
+    
+    return;
+}
+
+- (void) playNextSong {
+    NSLog(@"From playNextSong: getting the next song");
+    [_artistLabel setText:@"Loading"];
+    [_songLabel setText:@""];
+    _isGettingSong = true;
+    [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+}
+
+- (void) goOffline {
+    [_welcomeLabel setText:@""];
+    [_cityLabel setText:@"OFFLINE"];
+    [_artistLabel setText:@""];
+    [_player stop];
+    [_songLabel setText:@"No connectivity."];
+    [self killProgressAnimation];
+}
+
+- (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
+    NSLog(@"Decode error from av player");
+}
+
+- (void)noMusicForLocality {
+    NSLog(@"We couldn't find any music for this place!");
+}
+
+# pragma mark Backgrounding
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
+// IMPLEMENT ME
+//- (void) remoteControlReceivedWithEvent: (UIEvent*) event
+//{
+//    // see [event subtype] for details
+//}
+
+
+
+#pragma mark UI Helper functions.
+/*
+ * Get the next song for the user!
+ */
+- (void)handleGesture:(UISwipeGestureRecognizer *)sender
+{
+    if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
+        if (_reachable) {
+            if (!_isGettingSong) {
+                if (!_player.isPlaying) {
+                    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+                    [self becomeFirstResponder];
+                }
+                [self playNextSong];
+                
+                // Update the UI to the loading state
+                [_player stop];
+                [self killProgressAnimation];
+                
+                float percentageFinished = _player.currentTime/_player.duration;
+                [self drawCircleWithDuration:[NSNumber numberWithFloat:3000.0] fromCompletion:percentageFinished];
+            }
+        }
+        else {
+            [self goOffline];
+        }
+    }
+    if (sender.direction == UISwipeGestureRecognizerDirectionRight) {
+        if (!_isGettingSong) {
+            [_artistLabel setText:@""];
+            [_player stop];
+            [_songLabel setText:@"Swipe left to play"];
+            [self killProgressAnimation];
+        }
+    }
+
+    return;
+}
+
+/*
+ * Create touch surface for links.
+ */
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    UITouch *touch = [touches anyObject];
+    
+    if (CGRectContainsPoint([_artistLabel frame], [touch locationInView:self.view]))
+    {
+        if (![[UIApplication sharedApplication] openURL:_artistPage])
+            NSLog(@"%@%@",@"Failed to open url:",[_artistPage description]);
+    } else if (CGRectContainsPoint([_soundCloudLogo frame], [touch locationInView:self.view])){
+        if (![[UIApplication sharedApplication] openURL:_soundCloudHome])
+            NSLog(@"%@%@",@"Failed to open url:",[_soundCloudHome description]);
+    }
     
     return;
 }
@@ -279,10 +438,10 @@
     _progressCircle = [CAShapeLayer layer];
     
     _progressCircle.path = [UIBezierPath bezierPathWithRoundedRect:CGRectMake(0, 0, 2.0*radius, 2.0*radius)
-                                             cornerRadius:radius].CGPath;
+                                                      cornerRadius:radius].CGPath;
     // Center the shape in self.view
     _progressCircle.position = CGPointMake(CGRectGetMidX(self.view.frame)-radius,
-                                  CGRectGetMidY(self.view.frame)-radius);
+                                           CGRectGetMidY(self.view.frame)-radius);
     
     _progressCircle.fillColor = [UIColor clearColor].CGColor;
     _progressCircle.strokeColor = [UIColor whiteColor].CGColor;
@@ -341,162 +500,5 @@
 {
     [self drawCircleWithDuration:[NSNumber numberWithFloat:5000.0f] fromCompletion:0.0f];
 }
-
-/*
- * Handles reappearance of UI when the application reenters the foreground.
- */
--(void) applicationReopened
-{
-    NSLog(@"entered dat foreground!");
-    
-    if (_player.playing) {
-        float percentageFinished = _player.currentTime/_player.duration;
-        float dDuration = (_player.duration - _player.currentTime)*1000;
-        NSNumber *duration = [NSNumber numberWithFloat:dDuration];
-        [self drawCircleWithDuration:duration fromCompletion:percentageFinished];
-    }
-    
-    // I think we need to use this to keep music active.
-    [self becomeFirstResponder];
-}
-
-- (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    NSLog(@"Getting location failed!");
-}
-
-#pragma mark AV Audio Player interactions
-/*
- * Called when the song is done, loads the next song.
- */
-- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
-    
-    if (_prevLocality != [_cloudPacket objectForKey:@"locality"]) {
-        [_cityLabel setText:[[_cloudPacket objectForKey:@"locality"] uppercaseString]];
-        _prevLocality = [_cloudPacket objectForKey:@"locality"];
-    }
-    
-    if (_reachable) {
-        // Request another song from the soundcloud searcher, using the new location
-        [self playNextSong];
-        
-    }
-    else {
-        [_welcomeLabel setText:@""];
-        [_cityLabel setText:@"OFFLINE"];
-        [_artistLabel setText:@""];
-        [_player stop];
-        [_songLabel setText:@"No connectivity."];
-        [self killProgressAnimation];
-    }
-    
-    return;
-}
-
-- (void) playNextSong {
-    [_artistLabel setText:@"Loading"];
-    [_songLabel setText:@""];
-    [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-    _isGettingSong = true;
-}
-
-- (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
-    NSLog(@"Decode error from av player");
-}
-
-- (void)noMusicForLocality {
-    NSLog(@"We couldn't find any music for this place!");
-}
-
-# pragma mark Backgrounding
-- (BOOL)canBecomeFirstResponder {
-    return YES;
-}
-
-// IMPLEMENT ME
-//- (void) remoteControlReceivedWithEvent: (UIEvent*) event
-//{
-//    // see [event subtype] for details
-//}
-
-/*
- * Called when app loses network connectivity.
- */
-- (void) didBecomeUnreachable {
-    if (![_player isPlaying]) {
-        [_welcomeLabel setText:@""];
-        [_cityLabel setText:@"OFFLINE"];
-        [_artistLabel setText:@""];
-        [_player stop];
-        [_songLabel setText:@"No connectivity."];
-        [self killProgressAnimation];
-    }
-    _reachable = false;
-}
-
-/*
- * Called when app regains network connectivity.
- */
-- (void) didBecomeReachable {
-    _reachable = true;
-}
-
-/*
- * Create touch surface for links.
- */
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
-{
-    UITouch *touch = [touches anyObject];
-    
-    if (CGRectContainsPoint([_artistLabel frame], [touch locationInView:self.view]))
-    {
-        if (![[UIApplication sharedApplication] openURL:_artistPage])
-            NSLog(@"%@%@",@"Failed to open url:",[_artistPage description]);
-    } else if (CGRectContainsPoint([_soundCloudLogo frame], [touch locationInView:self.view])){
-        if (![[UIApplication sharedApplication] openURL:_soundCloudHome])
-            NSLog(@"%@%@",@"Failed to open url:",[_soundCloudHome description]);
-    }
-    
-    return;
-}
-
-/*
- * Get the next song for the user!
- */
-- (void)handleGesture:(UISwipeGestureRecognizer *)sender
-{
-    if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
-        if (_reachable) {
-            if (!_isGettingSong) {
-                [self playNextSong];
-                
-                // Update the UI to the loading state
-                [_player stop];
-                [self killProgressAnimation];
-                
-                float percentageFinished = _player.currentTime/_player.duration;
-                [self drawCircleWithDuration:[NSNumber numberWithFloat:3000.0] fromCompletion:percentageFinished];
-            }
-        }
-        else {
-            [_welcomeLabel setText:@""];
-            [_cityLabel setText:@"OFFLINE"];
-            [_artistLabel setText:@""];
-            [_player stop];
-            [_songLabel setText:@"No connectivity."];
-            [self killProgressAnimation];
-        }
-    }
-    if (sender.direction == UISwipeGestureRecognizerDirectionRight) {
-        [_artistLabel setText:@""];
-        [_player stop];
-        [_songLabel setText:@"Swipe right to play"];
-        [self killProgressAnimation];
-    }
-    
-    
-    return;
-}
-
-
 
 @end

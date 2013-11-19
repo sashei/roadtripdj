@@ -17,6 +17,13 @@
 
 @interface SoundCloudSearcher : NSObject
 
+// For backgrounding.
+@property (nonatomic, strong) NSDecimalNumber *previous;
+@property (nonatomic, strong) NSDecimalNumber *current;
+@property (nonatomic) NSUInteger position;
+@property (nonatomic, strong) NSTimer *updateTimer;
+@property (nonatomic) UIBackgroundTaskIdentifier backgroundTask;
+
 @property NSString *city;
 @property Track *track;
 

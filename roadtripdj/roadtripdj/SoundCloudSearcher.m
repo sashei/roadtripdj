@@ -10,8 +10,22 @@
 
 @implementation SoundCloudSearcher
 
+- (id) init {
+    self = [super init];
+    self.backgroundTask = UIBackgroundTaskInvalid;
+    return self;
+}
+
 -(void)handleCity:(NSString *)city
 {
+    // Start the background task of getting the next song.
+    self.backgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
+        NSLog(@"Background handler called. Not running background tasks anymore.");
+        [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTask];
+        self.backgroundTask = UIBackgroundTaskInvalid;
+    }];
+    
+    NSLog(@"Received call from SHVC, handling city..");
     _track = [Track new];
     _city = city;
     
@@ -116,7 +130,7 @@
     return;
 }
 
--(void)selectTrack:(NSMutableArray *)tracks
+-(void)selectTrack:(NSArray *)tracks
 {
     int randTrack = arc4random() % [tracks count];
     
@@ -157,11 +171,19 @@
 
 -(void)doneSearching
 {
+    NSLog(@"Seinding info back to SHVC");
     [_target performSelector:_action withObject:_track];
     
     [self clearFields];
     
     [[NSURLCache sharedURLCache] removeAllCachedResponses];
+    
+    // End background task.
+    if (self.backgroundTask != UIBackgroundTaskInvalid)
+    {
+        [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTask];
+        self.backgroundTask = UIBackgroundTaskInvalid;
+    }
     
     return;
 }
