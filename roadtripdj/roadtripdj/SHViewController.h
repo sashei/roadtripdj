@@ -10,6 +10,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import "SoundCloudSearcher.h"
 #import <AVFoundation/AVFoundation.h>
+#import <MediaPlayer/MediaPlayer.h>
 #import <SoundCloudSearcher.h>
 #import <Reachability.h>
 

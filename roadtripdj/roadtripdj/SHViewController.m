@@ -217,12 +217,7 @@
  */
 - (void) didBecomeUnreachable {
     if (![_player isPlaying]) {
-        [_welcomeLabel setText:@""];
-        [_cityLabel setText:@"OFFLINE"];
-        [_artistLabel setText:@""];
-        [_player stop];
-        [_songLabel setText:@"No connectivity."];
-        [self killProgressAnimation];
+        [self goOffline];
         [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
         [self resignFirstResponder];
     }
@@ -304,6 +299,12 @@
     [self drawCircleWithDuration:[track.trackInformation objectForKey:@"duration"] fromCompletion:0.0f];
     _isGettingSong = false;
     
+    // Update now playing center
+    if ([MPNowPlayingInfoCenter class])  {
+        NSDictionary *currentlyPlayingTrackInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:_songLabel.text, _artistLabel.text, [_currentPlacemark locality], [NSNumber numberWithDouble:_player.duration], [NSNumber numberWithDouble:_player.currentTime], [NSNumber numberWithFloat:1.0], nil] forKeys:[NSArray arrayWithObjects:MPMediaItemPropertyTitle, MPMediaItemPropertyArtist, MPMediaItemPropertyAlbumTitle, MPMediaItemPropertyPlaybackDuration, MPNowPlayingInfoPropertyElapsedPlaybackTime, MPNowPlayingInfoPropertyPlaybackRate, nil]];
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = currentlyPlayingTrackInfo;
+    }
+    
     return;
 }
 
@@ -314,10 +315,10 @@
 - (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
     NSLog(@"Player is finished playing.");
     
-    if (_prevLocality != [_cloudPacket objectForKey:@"locality"]) {
-        [_cityLabel setText:[[_cloudPacket objectForKey:@"locality"] uppercaseString]];
-        _prevLocality = [_cloudPacket objectForKey:@"locality"];
-    }
+//    if (_prevLocality != [_cloudPacket objectForKey:@"locality"]) {
+//        [_cityLabel setText:[[_cloudPacket objectForKey:@"locality"] uppercaseString]];
+//        _prevLocality = [_cloudPacket objectForKey:@"locality"];
+//    }
     
     if (_reachable) {
         // Request another song from the soundcloud searcher, using the new location
@@ -331,12 +332,21 @@
     return;
 }
 
+- (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
+    NSLog(@"Decode error from av player");
+}
+
 - (void) playNextSong {
     NSLog(@"From playNextSong: getting the next song");
     [_artistLabel setText:@"Loading"];
     [_songLabel setText:@""];
     _isGettingSong = true;
     [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+    
+    if ([MPNowPlayingInfoCenter class])  {
+        NSDictionary *currentlyPlayingTrackInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Loading", @"", [_currentPlacemark locality], [NSNumber numberWithDouble:0.0], [NSNumber numberWithDouble:0.0], [NSNumber numberWithFloat:1.0], nil] forKeys:[NSArray arrayWithObjects:MPMediaItemPropertyTitle, MPMediaItemPropertyArtist, MPMediaItemPropertyAlbumTitle, MPMediaItemPropertyPlaybackDuration, MPNowPlayingInfoPropertyElapsedPlaybackTime, MPNowPlayingInfoPropertyPlaybackRate, nil]];
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = currentlyPlayingTrackInfo;
+    }
 }
 
 - (void) goOffline {
@@ -346,10 +356,41 @@
     [_player stop];
     [_songLabel setText:@"No connectivity."];
     [self killProgressAnimation];
+    [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
 }
 
-- (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
-    NSLog(@"Decode error from av player");
+- (void) skipTrack {
+    if (_reachable) {
+        if (!_isGettingSong) {
+            if (!_player.isPlaying) {
+                [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+                [self becomeFirstResponder];
+            }
+            [self playNextSong];
+            
+            // Update the UI to the loading state
+            [_player stop];
+            [self killProgressAnimation];
+            
+            float percentageFinished = _player.currentTime/_player.duration;
+            [self drawCircleWithDuration:[NSNumber numberWithFloat:3000.0] fromCompletion:percentageFinished];
+        }
+    }
+    else {
+        [self goOffline];
+    }
+}
+
+- (void) stopMusic {
+    if (!_isGettingSong && _player.isPlaying) {
+        [_artistLabel setText:@""];
+        [_player stop];
+        [_songLabel setText:@"Swipe left to play"];
+        [self killProgressAnimation];
+        [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+        [self resignFirstResponder];
+        [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
+    }
 }
 
 - (void)noMusicForLocality {
@@ -361,12 +402,29 @@
     return YES;
 }
 
-// IMPLEMENT ME
-//- (void) remoteControlReceivedWithEvent: (UIEvent*) event
-//{
-//    // see [event subtype] for details
-//}
-
+// Lock screen remote control actions.
+- (void) remoteControlReceivedWithEvent: (UIEvent*) event
+{
+    if (event.type == UIEventTypeRemoteControl) {
+        
+        switch (event.subtype) {
+                
+            case UIEventSubtypeRemoteControlPause:
+                [self stopMusic];
+                break;
+                
+            case UIEventSubtypeRemoteControlPreviousTrack:
+                break;
+                
+            case UIEventSubtypeRemoteControlNextTrack:
+                [self skipTrack];
+                break;
+                
+            default:
+                break;
+        }
+    }
+}
 
 
 #pragma mark UI Helper functions.
@@ -376,33 +434,10 @@
 - (void)handleGesture:(UISwipeGestureRecognizer *)sender
 {
     if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
-        if (_reachable) {
-            if (!_isGettingSong) {
-                if (!_player.isPlaying) {
-                    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
-                    [self becomeFirstResponder];
-                }
-                [self playNextSong];
-                
-                // Update the UI to the loading state
-                [_player stop];
-                [self killProgressAnimation];
-                
-                float percentageFinished = _player.currentTime/_player.duration;
-                [self drawCircleWithDuration:[NSNumber numberWithFloat:3000.0] fromCompletion:percentageFinished];
-            }
-        }
-        else {
-            [self goOffline];
-        }
+        [self skipTrack];
     }
     if (sender.direction == UISwipeGestureRecognizerDirectionRight) {
-        if (!_isGettingSong) {
-            [_artistLabel setText:@""];
-            [_player stop];
-            [_songLabel setText:@"Swipe left to play"];
-            [self killProgressAnimation];
-        }
+        [self stopMusic];
     }
 
     return;
