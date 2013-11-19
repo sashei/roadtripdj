@@ -2,8 +2,8 @@
 //  SHViewController.h
 //  roadtripdj
 //
-//  Created by Sasha Heinen on 11/15/13.
-//  Copyright (c) 2013 Sasha Heinen. All rights reserved.
+//  Created by Sasha Heinen and Rupert Deese on 11/15/13.
+//  Copyright (c) 2013 Sasha Heinen and Rupert Deese. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
@@ -32,7 +32,8 @@
 @property SoundCloudSearcher *cloud;
 @property NSMutableDictionary *songData;
 
-@property UISwipeGestureRecognizer *swipeRecognizer;
+@property UISwipeGestureRecognizer *leftSwipe;
+@property UISwipeGestureRecognizer *rightSwipe;
 
 @property UILabel *welcomeLabel;
 @property UILabel *cityLabel;

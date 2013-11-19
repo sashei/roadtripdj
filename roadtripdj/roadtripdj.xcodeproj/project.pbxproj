@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		6755BE061839B8BC002DC30D /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 6755BE051839B8BC002DC30D /* Reachability.m */; };
 		6755BE0C1839B916002DC30D /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6755BE0B1839B916002DC30D /* SystemConfiguration.framework */; };
+		6755BE171839F855002DC30D /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 6755BE161839F855002DC30D /* Icon.png */; };
+		6755BE1A1839FCCD002DC30D /* asphalt_launch-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6755BE181839FCCD002DC30D /* asphalt_launch-568h@2x.png */; };
+		6755BE1B1839FCCD002DC30D /* asphalt_launch@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6755BE191839FCCD002DC30D /* asphalt_launch@2x.png */; };
+		6755BE1D1839FE42002DC30D /* Icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 6755BE1C1839FE42002DC30D /* Icon@2x.png */; };
 		7D6839431837B965006D2606 /* sc_logo.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D6839411837B965006D2606 /* sc_logo.png */; };
 		7D6839441837B965006D2606 /* sc_logo@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D6839421837B965006D2606 /* sc_logo@2x.png */; };
 		7D7C1B67183722CB00CDD084 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7D7C1B66183722CB00CDD084 /* Foundation.framework */; };
@@ -151,6 +155,10 @@
 		6755BE041839B8BC002DC30D /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
 		6755BE051839B8BC002DC30D /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		6755BE0B1839B916002DC30D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		6755BE161839F855002DC30D /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		6755BE181839FCCD002DC30D /* asphalt_launch-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "asphalt_launch-568h@2x.png"; sourceTree = "<group>"; };
+		6755BE191839FCCD002DC30D /* asphalt_launch@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "asphalt_launch@2x.png"; sourceTree = "<group>"; };
+		6755BE1C1839FE42002DC30D /* Icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Icon@2x.png"; sourceTree = "<group>"; };
 		7D6839411837B965006D2606 /* sc_logo.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = sc_logo.png; sourceTree = "<group>"; };
 		7D6839421837B965006D2606 /* sc_logo@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "sc_logo@2x.png"; sourceTree = "<group>"; };
 		7D7C1B63183722CB00CDD084 /* roadtripdj.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = roadtripdj.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -269,6 +277,12 @@
 		7D7C1B6C183722CB00CDD084 /* roadtripdj */ = {
 			isa = PBXGroup;
 			children = (
+				7D6839411837B965006D2606 /* sc_logo.png */,
+				7D6839421837B965006D2606 /* sc_logo@2x.png */,
+				6755BE1C1839FE42002DC30D /* Icon@2x.png */,
+				6755BE181839FCCD002DC30D /* asphalt_launch-568h@2x.png */,
+				6755BE191839FCCD002DC30D /* asphalt_launch@2x.png */,
+				6755BE161839F855002DC30D /* Icon.png */,
 				6755BE041839B8BC002DC30D /* Reachability.h */,
 				6755BE051839B8BC002DC30D /* Reachability.m */,
 				7D7C1B75183722CB00CDD084 /* SHAppDelegate.h */,
@@ -288,8 +302,6 @@
 		7D7C1B6D183722CB00CDD084 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				7D6839411837B965006D2606 /* sc_logo.png */,
-				7D6839421837B965006D2606 /* sc_logo@2x.png */,
 				7D7C1B6E183722CB00CDD084 /* roadtripdj-Info.plist */,
 				7D7C1B6F183722CB00CDD084 /* InfoPlist.strings */,
 				7D7C1B72183722CB00CDD084 /* main.m */,
@@ -537,10 +549,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6755BE1A1839FCCD002DC30D /* asphalt_launch-568h@2x.png in Resources */,
+				6755BE1D1839FE42002DC30D /* Icon@2x.png in Resources */,
 				7D6839431837B965006D2606 /* sc_logo.png in Resources */,
 				7D6839441837B965006D2606 /* sc_logo@2x.png in Resources */,
+				6755BE171839F855002DC30D /* Icon.png in Resources */,
 				7D7C1B7F183722CB00CDD084 /* Images.xcassets in Resources */,
 				7D7C1B71183722CB00CDD084 /* InfoPlist.strings in Resources */,
+				6755BE1B1839FCCD002DC30D /* asphalt_launch@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -648,6 +664,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Hart DEESE (DRW97N9F43)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -664,8 +681,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "5DA82B1E-5AD6-4A51-8476-9EF266818121";
 				SDKROOT = iphoneos;
 				VALID_ARCHS = "armv7 armv7s";
 			};
@@ -688,6 +706,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer: Hart DEESE (DRW97N9F43)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -698,8 +717,9 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				ONLY_ACTIVE_ARCH = YES;
+				PROVISIONING_PROFILE = "5DA82B1E-5AD6-4A51-8476-9EF266818121";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7 armv7s";
@@ -711,6 +731,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Rupert Deese";
 				"FRAMEWORK_SEARCH_PATHS[sdk=*]" = "$(SRCROOT)/../**";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "roadtripdj/roadtripdj-Prefix.pch";
@@ -722,6 +743,7 @@
 					"-ObjC.",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "EBE24989-4D65-4BF5-832F-4DD2F3D26C62";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -731,6 +753,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Rupert Deese";
 				"FRAMEWORK_SEARCH_PATHS[arch=*]" = "$(SRCROOT)/../**";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "roadtripdj/roadtripdj-Prefix.pch";
@@ -742,6 +765,7 @@
 					"-ObjC.",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "EBE24989-4D65-4BF5-832F-4DD2F3D26C62";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

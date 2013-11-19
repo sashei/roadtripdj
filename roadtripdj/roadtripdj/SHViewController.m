@@ -2,8 +2,8 @@
 //  SHViewController.m
 //  roadtripdj
 //
-//  Created by Sasha Heinen on 11/15/13.
-//  Copyright (c) 2013 Sasha Heinen. All rights reserved.
+//  Created by Sasha Heinen and Rupert Deese on 11/15/13.
+//  Copyright (c) 2013 Sasha Heinen and Rupert Deese. All rights reserved.
 //
 
 #import "SHViewController.h"
@@ -23,11 +23,14 @@
         NSError *trash;
         [_session setCategory:@"AVAudioSessionCategoryPlayback" error:&trash];
         
-        // Create a listener for when this application enters the foreground
+        // For backgrounding music and using lock screen controls.
         if(&UIApplicationWillEnterForegroundNotification != nil)
         {
             [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationReopened) name:UIApplicationWillEnterForegroundNotification object:nil];
         }
+        
+        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayback error:nil];
+        [[AVAudioSession sharedInstance] setActive: YES error: nil];
         
         // meh
         _prevLocality = @"";
@@ -94,6 +97,7 @@
         
         _artistLabel = [[UILabel alloc] initWithFrame:artFrame];
         [_artistLabel setTextColor:[UIColor whiteColor]];
+        [_artistLabel setText:@"Swipe left to quit"];
         [_artistLabel setTextAlignment:NSTextAlignmentCenter];
         [_artistLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:25]];
         [_artistLabel setUserInteractionEnabled:YES];
@@ -122,10 +126,15 @@
         _soundCloudHome = [NSURL URLWithString:@"http://www.soundcloud.com"];
         
         // gesture recognizer initialization
-        _swipeRecognizer = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
-        [_swipeRecognizer setDelegate:self];
-        _swipeRecognizer.direction = UISwipeGestureRecognizerDirectionLeft;
-        [self.view addGestureRecognizer:_swipeRecognizer];
+        _leftSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
+        [_leftSwipe setDelegate:self];
+        _leftSwipe.direction = UISwipeGestureRecognizerDirectionLeft;
+        [self.view addGestureRecognizer:_leftSwipe];
+        
+        _rightSwipe = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleGesture:)];
+        [_rightSwipe setDelegate:self];
+        _rightSwipe.direction = UISwipeGestureRecognizerDirectionRight;
+        [self.view addGestureRecognizer:_rightSwipe];
         
         //****************************************** END VIEW AND UI INITIALIZATION
         
@@ -171,6 +180,19 @@
     
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    //Once the view has loaded then we can register to begin recieving controls and we can become the first responder
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    [self becomeFirstResponder];
+}
+- (void)viewWillDisappear:(BOOL)animated {
+    [super viewWillDisappear:animated];
+    //End recieving events
+    [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+    [self resignFirstResponder];
+}
+
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
@@ -205,12 +227,17 @@
         [_welcomeLabel setText:@"Welcome to"];
         [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
         
-        if (_player == Nil || ![_player isPlaying]) {
-            [_artistLabel setText:@"Loading"];
-            [_songLabel setText:@""];
+        if (_player == Nil ) {
             [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
             _isGettingSong = true;
             [self drawLoadingCircle];
+        }
+        else if (![_player isPlaying]) {
+            [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+            _isGettingSong = true;
+            [self drawLoadingCircle];
+            [_songLabel setText:@""];
+            [_artistLabel setText:@"Loading"];
         }
     }];
     
@@ -328,6 +355,9 @@
         NSNumber *duration = [NSNumber numberWithFloat:dDuration];
         [self drawCircleWithDuration:duration fromCompletion:percentageFinished];
     }
+    
+    // I think we need to use this to keep music active.
+    [self becomeFirstResponder];
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
@@ -347,10 +377,8 @@
     
     if (_reachable) {
         // Request another song from the soundcloud searcher, using the new location
-        _isGettingSong = true;
-        [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-        [_artistLabel setText:@"Loading"];
-        [_songLabel setText:@""];
+        [self playNextSong];
+        
     }
     else {
         [_welcomeLabel setText:@""];
@@ -364,6 +392,13 @@
     return;
 }
 
+- (void) playNextSong {
+    [_artistLabel setText:@"Loading"];
+    [_songLabel setText:@""];
+    [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+    _isGettingSong = true;
+}
+
 - (void)audioPlayerDecodeErrorDidOccur:(AVAudioPlayer *)player error:(NSError *)error {
     NSLog(@"Decode error from av player");
 }
@@ -371,6 +406,17 @@
 - (void)noMusicForLocality {
     NSLog(@"We couldn't find any music for this place!");
 }
+
+# pragma mark Backgrounding
+- (BOOL)canBecomeFirstResponder {
+    return YES;
+}
+
+// IMPLEMENT ME
+//- (void) remoteControlReceivedWithEvent: (UIEvent*) event
+//{
+//    // see [event subtype] for details
+//}
 
 /*
  * Called when app loses network connectivity.
@@ -391,7 +437,6 @@
  * Called when app regains network connectivity.
  */
 - (void) didBecomeReachable {
-    NSLog(@"Reachable.");
     _reachable = true;
 }
 
@@ -419,35 +464,35 @@
  */
 - (void)handleGesture:(UISwipeGestureRecognizer *)sender
 {
-    if (_reachable) {
-        if (!_isGettingSong) {
-            // Call the cloud
-            
-            NSLog([_cloudPacket objectForKey:@"locality"]);
-            _isGettingSong = true;
-            [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-            NSLog(@"HEllo!");
-            
-            
-            // Update the UI to the loading state
+    if (sender.direction == UISwipeGestureRecognizerDirectionLeft) {
+        if (_reachable) {
+            if (!_isGettingSong) {
+                [self playNextSong];
+                
+                // Update the UI to the loading state
+                [_player stop];
+                [self killProgressAnimation];
+                
+                float percentageFinished = _player.currentTime/_player.duration;
+                [self drawCircleWithDuration:[NSNumber numberWithFloat:3000.0] fromCompletion:percentageFinished];
+            }
+        }
+        else {
+            [_welcomeLabel setText:@""];
+            [_cityLabel setText:@"OFFLINE"];
+            [_artistLabel setText:@""];
             [_player stop];
+            [_songLabel setText:@"No connectivity."];
             [self killProgressAnimation];
-            
-            [_artistLabel setText:@"Loading"];
-            [_songLabel setText:@""];
-            
-            float percentageFinished = _player.currentTime/_player.duration;
-            [self drawCircleWithDuration:[NSNumber numberWithFloat:3000.0] fromCompletion:percentageFinished];
         }
     }
-    else {
-        [_welcomeLabel setText:@""];
-        [_cityLabel setText:@"OFFLINE"];
+    if (sender.direction == UISwipeGestureRecognizerDirectionRight) {
         [_artistLabel setText:@""];
         [_player stop];
-        [_songLabel setText:@"No connectivity."];
+        [_songLabel setText:@"Swipe right to play"];
         [self killProgressAnimation];
     }
+    
     
     return;
 }
