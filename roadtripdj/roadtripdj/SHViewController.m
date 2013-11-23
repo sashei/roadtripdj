@@ -369,6 +369,8 @@
     _isGettingSong = true;
     [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
     
+    _artistPage = nil;
+    
     if ([MPNowPlayingInfoCenter class])  {
         NSDictionary *currentlyPlayingTrackInfo = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:@"Loading", @"", [_currentPlacemark locality], [NSNumber numberWithDouble:0.0], [NSNumber numberWithDouble:0.0], [NSNumber numberWithFloat:1.0], nil] forKeys:[NSArray arrayWithObjects:MPMediaItemPropertyTitle, MPMediaItemPropertyArtist, MPMediaItemPropertyAlbumTitle, MPMediaItemPropertyPlaybackDuration, MPNowPlayingInfoPropertyElapsedPlaybackTime, MPNowPlayingInfoPropertyPlaybackRate, nil]];
         [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = currentlyPlayingTrackInfo;
@@ -540,7 +542,7 @@
         [layer removeFromSuperlayer];
     }
     
-    if([_artistLabel.text isEqualToString:@"Loading"])
+    if(flag && [_artistLabel.text isEqualToString:@"Loading"])
     {
         [self drawLoadingCircle];
     }
