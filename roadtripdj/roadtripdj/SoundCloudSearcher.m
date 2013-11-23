@@ -12,7 +12,11 @@
 
 - (id) init {
     self = [super init];
-    self.backgroundTask = UIBackgroundTaskInvalid;
+    if (self)
+    {
+        self.backgroundTask = UIBackgroundTaskInvalid;
+    }
+    
     return self;
 }
 
@@ -20,12 +24,12 @@
 {
     // Start the background task of getting the next song.
     self.backgroundTask = [[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{
-        NSLog(@"Background handler called. Not running background tasks anymore.");
+        //NSLog(@"Background handler called. Not running background tasks anymore.");
         [[UIApplication sharedApplication] endBackgroundTask:self.backgroundTask];
         self.backgroundTask = UIBackgroundTaskInvalid;
     }];
     
-    NSLog(@"Received call from SHVC, handling city..");
+    //NSLog(@"Received call from SHVC, handling city..");
     _track = [Track new];
     _city = city;
     
@@ -138,7 +142,7 @@
     
     if ([[track objectForKey:@"duration"] floatValue] > 600000)
     {
-        NSLog(@"trying again!");
+        //NSLog(@"trying again!");
         [self clearFields];
         [self handleCity:_city];
     } else {
@@ -171,7 +175,7 @@
 
 -(void)doneSearching
 {
-    NSLog(@"Seinding info back to SHVC");
+    //NSLog(@"Sending info back to SHVC");
     [_target performSelector:_action withObject:_track];
     
     [self clearFields];
