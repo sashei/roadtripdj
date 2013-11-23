@@ -18,6 +18,7 @@
 
 @property CLLocationManager *locationManager;
 @property CLLocation *currentLocation;
+@property BOOL canLocate;
 @property CLGeocoder *geocoder;
 @property CLPlacemark *currentPlacemark;
 @property NSString *prevLocality;

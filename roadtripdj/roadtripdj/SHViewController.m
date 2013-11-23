@@ -64,7 +64,6 @@
         
         _songLabel = [[UILabel alloc] initWithFrame:songFrame];
         [_songLabel setTextColor:[UIColor whiteColor]];
-        [_songLabel setText:@"Swipe left to skip songs"];
         [_songLabel setTextAlignment:NSTextAlignmentCenter];
         [_songLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:20]];
         [_songLabel setBackgroundColor:[UIColor clearColor]];
@@ -80,7 +79,6 @@
         
         _artistLabel = [[UILabel alloc] initWithFrame:artFrame];
         [_artistLabel setTextColor:[UIColor whiteColor]];
-        [_artistLabel setText:@"Swipe right to quit"];
         [_artistLabel setTextAlignment:NSTextAlignmentCenter];
         [_artistLabel setFont:[UIFont fontWithName:@"Avenir-Roman" size:25]];
         [_artistLabel setUserInteractionEnabled:YES];
@@ -118,6 +116,8 @@
         _rightSwipe.direction = UISwipeGestureRecognizerDirectionRight;
         [self.view addGestureRecognizer:_rightSwipe];
         
+        [self setStopLabels];
+        
         //****************************************** END VIEW AND UI INITIALIZATION
         
         // For backgrounding music and using lock screen controls.
@@ -137,7 +137,8 @@
         self.locationManager = [[CLLocationManager alloc] init];
         self.locationManager.delegate = self;
         [self.locationManager startMonitoringSignificantLocationChanges];
-        _prevLocality = @"";
+        _canLocate = true;
+        //_prevLocality = @"";
         
         // Set up the geocoder
         self.geocoder = [[CLGeocoder alloc] init];
@@ -163,6 +164,11 @@
         };
         // Start Monitoring
         [_reachability startNotifier];
+//        }
+//        else {
+//            [self goOffline];
+//            _canLocate = false;
+//        }
     }
     return self;
 }
@@ -193,13 +199,19 @@
  */
 -(void) applicationReopened
 {
-    NSLog(@"entered dat foreground!");
-    
     if (_player.playing) {
         float percentageFinished = _player.currentTime/_player.duration;
         float dDuration = (_player.duration - _player.currentTime)*1000;
         NSNumber *duration = [NSNumber numberWithFloat:dDuration];
         [self drawCircleWithDuration:duration fromCompletion:percentageFinished];
+    }
+    [_locationManager startMonitoringSignificantLocationChanges];
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+    if (!_player.isPlaying) {
+        [_locationManager stopMonitoringSignificantLocationChanges];
     }
 }
 
@@ -210,6 +222,9 @@
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     [self becomeFirstResponder];
     _reachable = true;
+    if (!_player.isPlaying && _canLocate) {
+        [self setStopLabels];
+    }
 }
 
 /*
@@ -237,9 +252,13 @@
  * TODO: Actually send the cloudPacket to the soundcloudsearcher, update the player, etc
  */
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
+    _canLocate = true;
+    if (!_player.isPlaying && _reachable) {
+        [self setStopLabels];
+    }
+    
     // The last object in the NSArray is the most recent location.
     self.currentLocation = [locations lastObject];
-    
     
     // Test that the horizontal accuracy does not indicate an invalid measurement
     if (self.currentLocation.horizontalAccuracy < 0) {
@@ -258,22 +277,27 @@
         [_welcomeLabel setText:@"Welcome to"];
         [_cityLabel setText:[[self.currentPlacemark locality] uppercaseString]];
         
-        if (_player == Nil ) {
-            _isGettingSong = true;
-            [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
-            [self drawLoadingCircle];
-        }
-        else if (![_player isPlaying]) {
-            [self drawLoadingCircle];
-            [self playNextSong];
-        }
+//        if (_player == Nil ) {
+//            _isGettingSong = true;
+//            [_cloud handleCity:[_cloudPacket objectForKey:@"locality"]];
+//            [self drawLoadingCircle];
+//        }
+//        else if (![_player isPlaying]) {
+//            [self drawLoadingCircle];
+//            [self playNextSong];
+//        }
     }];
     
     return;
 }
 
 - (void)locationManager:(CLLocationManager *)manager didFailWithError:(NSError *)error {
-    NSLog(@"Getting location failed!");
+    NSLog(@"getting location failed");
+    _canLocate = false;
+    if (!_player.isPlaying) {
+        [self goOffline];
+        [_locationManager stopMonitoringSignificantLocationChanges];
+    }
 }
 
 #pragma mark Sound Cloud Searcher selector function
@@ -320,7 +344,7 @@
 //        _prevLocality = [_cloudPacket objectForKey:@"locality"];
 //    }
     
-    if (_reachable) {
+    if (_reachable && _canLocate) {
         // Request another song from the soundcloud searcher, using the new location
         [self playNextSong];
         
@@ -360,10 +384,11 @@
 }
 
 - (void) skipTrack {
-    if (_reachable) {
+    if (_reachable && _canLocate) {
         if (!_isGettingSong) {
             if (!_player.isPlaying) {
                 [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+                [_locationManager startMonitoringSignificantLocationChanges];
                 [self becomeFirstResponder];
             }
             [self playNextSong];
@@ -383,11 +408,11 @@
 
 - (void) stopMusic {
     if (!_isGettingSong && _player.isPlaying) {
-        [_artistLabel setText:@""];
+        [self setStopLabels];
         [_player stop];
-        [_songLabel setText:@"Swipe left to play"];
         [self killProgressAnimation];
         [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
+        [_locationManager stopMonitoringSignificantLocationChanges];
         [self resignFirstResponder];
         [MPNowPlayingInfoCenter defaultCenter].nowPlayingInfo = nil;
     }
@@ -534,6 +559,11 @@
 - (void)drawLoadingCircle
 {
     [self drawCircleWithDuration:[NSNumber numberWithFloat:5000.0f] fromCompletion:0.0f];
+}
+
+- (void)setStopLabels {
+    [_artistLabel setText:@"Swipe right to stop"];
+    [_songLabel setText:@"Swipe left to play or skip"];
 }
 
 @end
