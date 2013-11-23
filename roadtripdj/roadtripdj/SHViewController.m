@@ -181,7 +181,7 @@
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    NSLog(@"is this even being called");
+    //NSLog(@"is this even being called");
     //Once the view has loaded then we can register to begin recieving controls and we can become the first responder
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
     [self becomeFirstResponder];
@@ -189,7 +189,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
     //End recieving events
-    NSLog(@"View disappearing!");
+    //NSLog(@"View disappearing!");
     [[UIApplication sharedApplication] endReceivingRemoteControlEvents];
     [self resignFirstResponder];
 }
@@ -199,6 +199,8 @@
  */
 -(void) applicationReopened
 {
+    //NSLog(@"entered dat foreground!");
+
     if (_player.playing) {
         float percentageFinished = _player.currentTime/_player.duration;
         float dDuration = (_player.duration - _player.currentTime)*1000;
@@ -536,6 +538,11 @@
     if( layer )
     {
         [layer removeFromSuperlayer];
+    }
+    
+    if([_artistLabel.text isEqualToString:@"Loading"])
+    {
+        [self drawLoadingCircle];
     }
     
     return;
